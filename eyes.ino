@@ -4,6 +4,13 @@
 #define CS 12
 #define CLK 13
 
+#define PROXIMITY_IR 2
+
+
+
+
+
+
 uint8_t UP_RIGHT_EYE[] = {
     0b00000000,
     0b00111100,
@@ -117,8 +124,8 @@ void front_eyes(uint8_t EYE[]) {
     for (int i = 4; i >= 1; i--) {
         screen.setRow(i, EYE[i-1], 1);
         screen.setRow(8-i+1, EYE[8-i], 1);
-        screen.setRow(i,  ~reverse(EYE[i-1]), 2);
-        screen.setRow(8-i+1, ~reverse(EYE[8-i]), 2);
+        screen.setRow(i,  reverse(EYE[i-1]), 2);
+        screen.setRow(8-i+1, reverse(EYE[8-i]), 2);
         delay(30);
     }
 }
@@ -131,10 +138,27 @@ void setup() {
     print_matrix(UP_RIGHT_EYE, 1);
     print_matrix(UP_RIGHT_EYE, 2);
     pinMode(2, INPUT);
+    //prox = digitalRead(PROXIMITY_IR);
     Serial.begin(9600);
 }
 
-void loop() {
+void loop(){
+  //int prox = 0;
+  //prox = digitalRead(2);
+  if(digitalRead(2)==0){
+    Serial.println(1);
+    //close_eyes();
+    front_eyes(ANGRY_EYE);
+  }
+  else{
+    Serial.println(0);
+    //close_eyes();
+    side_eyes(UP_RIGHT_EYE);
+  }  
+}
+
+
+/*void loop() {
     close_eyes();
     side_eyes(UP_RIGHT_EYE);
     delay(2500);
@@ -151,4 +175,4 @@ void loop() {
     front_eyes(PISSED_EYE);
     delay(2500);
     
-}
+}*/
