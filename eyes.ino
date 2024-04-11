@@ -60,6 +60,7 @@ uint8_t  PISSED_EYE[] = {
 };
 
 
+
 MATRIX7219 screen = MATRIX7219(DIN, CS, CLK, 2);
 
 void print_matrix(uint8_t image[8], uint8_t display = 1) {
@@ -116,8 +117,8 @@ void front_eyes(uint8_t EYE[]) {
     for (int i = 4; i >= 1; i--) {
         screen.setRow(i, EYE[i-1], 1);
         screen.setRow(8-i+1, EYE[8-i], 1);
-        screen.setRow(i, reverse(EYE[i-1]), 2);
-        screen.setRow(8-i+1, reverse(EYE[8-i]), 2);
+        screen.setRow(i,  ~reverse(EYE[i-1]), 2);
+        screen.setRow(8-i+1, ~reverse(EYE[8-i]), 2);
         delay(30);
     }
 }
@@ -129,14 +130,13 @@ void setup() {
     screen.clear();
     print_matrix(UP_RIGHT_EYE, 1);
     print_matrix(UP_RIGHT_EYE, 2);
+    pinMode(2, INPUT);
+    Serial.begin(9600);
 }
 
 void loop() {
     close_eyes();
     side_eyes(UP_RIGHT_EYE);
-    delay(2500);
-    close_eyes();
-    front_eyes(PISSED_EYE);
     delay(2500);
     close_eyes();
     front_eyes(ANGRY_EYE);
@@ -147,15 +147,8 @@ void loop() {
     close_eyes();
     front_eyes(HAPPY_EYE);
     delay(2500);
-    // screen.clear(); 
-    // for (int j = 1; j<=8; j++) {
-        // for (int i = 0; i < 256; i++) {
-            // screen.setRow(j, i, 1);
-            // delay(10);
-        // }
-        // for (int i = 0; i < 256; i++) {
-            // screen.setRow(j, i, 2);
-            // delay(10);
-        // }
-    // }
+    close_eyes();
+    front_eyes(PISSED_EYE);
+    delay(2500);
+    
 }
