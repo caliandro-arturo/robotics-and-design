@@ -5,17 +5,25 @@
 class Head {
     public:
         /** Instantiates the head, setting its position to the center
-         * and activating the pet sensor.
+         * activating the pet sensor and the ears.
          * 
-         * @param headPin           the head control pin
-         * @param petSensorPin      the pet sensor pin
-         * @param minMicroseconds   the time representing 0° (in microseconds)
-         * @param maxMicroseconds   the time representing 180° (in microseconds)
+         * @param headPin       the head control pin
+         * @param leftEarPin    the left ear control pin
+         * @param rightEarPin   the right ear control pin
+         * @param petSensorPin  the pet sensor pin
+         * @param minHeadUs     minimum value for head servo (in micros) 
+         * @param maxHeadUs     maximum value for head servo (in micros)
+         * @param minEarUs      minimum value for ears servos (in micros)
+         * @param maxEarUs      maximum value for ears servos (in micros)
         */
         Head(uint8_t headPin,
+             uint8_t leftEarPin,
+             uint8_t rightEarPin,
              uint8_t petSensorPin,
-             uint16_t minMicroseconds,
-             uint16_t maxMicroseconds);
+             uint16_t minHeadUs,
+             uint16_t maxHeadUs,
+             uint16_t minEarUs,
+             uint16_t maxEarUs);
 
         /** Moves the head to the selected position.
          * 
@@ -37,5 +45,6 @@ class Head {
 
     private:
         Servo head;
+        Servo leftEar, rightEar;
         bool isMoving;
 };
