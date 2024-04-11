@@ -61,6 +61,7 @@ class Arms {
         void setPosition(uint8_t armPin, uint8_t angle);
 
         ~Arms();
+
     private:
         bool isMoving;
         Servo leftArm;
