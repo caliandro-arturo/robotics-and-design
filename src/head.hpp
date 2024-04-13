@@ -5,25 +5,17 @@
 class Head {
     public:
         /** Instantiates the head, setting its position to the center
-         * activating the pet sensor and the ears.
+         * activating the pet sensor.
          * 
-         * @param headPin       the head control pin
-         * @param leftEarPin    the left ear control pin
-         * @param rightEarPin   the right ear control pin
-         * @param petSensorPin  the pet sensor pin
-         * @param minHeadUs     minimum value for head servo (in micros) 
-         * @param maxHeadUs     maximum value for head servo (in micros)
-         * @param minEarUs      minimum value for ears servos (in micros)
-         * @param maxEarUs      maximum value for ears servos (in micros)
+         * @param headPin           the head control pin
+         * @param petSensorPin      the pet sensor pin
+         * @param minMicroseconds   the time representing 0° (in microseconds)
+         * @param maxMicroseconds   the time representing 180° (in microseconds)
         */
         Head(uint8_t headPin,
-             uint8_t leftEarPin,
-             uint8_t rightEarPin,
              uint8_t petSensorPin,
-             uint16_t minHeadUs,
-             uint16_t maxHeadUs,
-             uint16_t minEarUs,
-             uint16_t maxEarUs);
+             uint16_t minMicroseconds,
+             uint16_t maxMicroseconds);
 
         /** Moves the head to the selected position.
          * 
@@ -36,7 +28,6 @@ class Head {
          * 
          * @param from  the starting angle (in degrees)
          * @param to    the ending angle (in degrees)
-         * 
         */
         void shake(uint8_t from, uint8_t to);
 
