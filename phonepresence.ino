@@ -15,7 +15,6 @@ PhoneSlot phoneSlot[4];
 
 
 void initPhoneSlot(){
-  //Serial.begin(9600);
   phoneSlot[0].pin = SLOT0;
   phoneSlot[1].pin = SLOT1;
   phoneSlot[2].pin = SLOT2;
