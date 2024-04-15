@@ -130,8 +130,9 @@ void eyes_setup() {
 
 void proximityInterrupt() {
     int proximity = digitalRead(PROXIMITY_IR);
-    if (proximity == LOW) {
+    if (proximity == LOW && status == TIMER_GOING) {
         mood = ANGRY;
+        status = HAND_DETECTED;
         //interruptOccurred = true; 
     } else {
         mood = NORMAL;
