@@ -18,9 +18,7 @@
 #define LED3_GREEN 6
 
 
-enum Status {TIMER_ON, PAUSE};
 
-volatile Status status;
 
 typedef struct{
   int redpin;
@@ -114,7 +112,7 @@ void init_leds(){
     pinMode(rgbled[i].greenpin, OUTPUT);
     pinMode(rgbled[i].bluepin, OUTPUT);
     rgbled[i].colorState = 0;
-    setLedOff(i);
+    setLedWhite(i);
   }
 }
 

@@ -1,5 +1,3 @@
-#include <MATRIX7219.h>
-#include <AceRoutine.h>
 
 #define DIN 11
 #define CS 12
@@ -118,7 +116,7 @@ void front_eyes(uint8_t EYE[]) {
 
 #define PROXIMITY_IR 2
 
-void setup() {
+void eyes_setup() {
     screen.begin();
     screen.setBrightness(1);
     screen.clear();
@@ -142,7 +140,7 @@ void proximityInterrupt() {
 }
 
 
-void loop() {
+void eyes_loop() {
     if (mood == ANGRY) {
         close_eyes();
         delay(50);
