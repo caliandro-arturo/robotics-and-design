@@ -1,73 +1,5 @@
 
-#define DIN 11
-#define CS 12
-#define CLK 13
 
-#define PROXIMITY_IR 2
-
-using namespace ace_routine;
-
-enum Mood {NORMAL, HAPPY, SAD, ANGRY, PISSED };
-
-volatile Mood mood;
-//volatile bool interruptOccurred = false;
-int oldProximity;
-
-
-uint8_t UP_RIGHT_EYE[] = {
-    0b00000000,
-    0b00111100,
-    0b01110010,
-    0b01110010,
-    0b01111110,
-    0b01111110,
-    0b00111100,
-    0b00000000
-};
-
-uint8_t  ANGRY_EYE[] = {
-    0b00000000,
-    0b00100000,
-    0b01110000,
-    0b01111000,
-    0b01100100,
-    0b01100110,
-    0b00111100,
-    0b00000000
-};
-
-uint8_t  FRONT_EYE[] = {
-    0b00000000,
-    0b00111100,
-    0b01111110,
-    0b01100110,
-    0b01100110,
-    0b01111110,
-    0b00111100,
-    0b00000000
-};
-
-uint8_t  HAPPY_EYE[] = {
-    0b00000000,
-    0b00011000,
-    0b00111100,
-    0b01111110,
-    0b01100110,
-    0b11000011,
-    0b10000001,
-    0b00000000
-};
-
-uint8_t  PISSED_EYE[] = {
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b11111111,
-    0b11111111,
-    0b00000000,
-    0b00000000,
-    0b00000000
-};
 
 MATRIX7219 screen = MATRIX7219(DIN, CS, CLK, 2);
 
@@ -116,7 +48,7 @@ void front_eyes(uint8_t EYE[]) {
 
 #define PROXIMITY_IR 2
 
-void eyes_setup() {
+void eye_setup() {
     screen.begin();
     screen.setBrightness(1);
     screen.clear();
@@ -133,15 +65,14 @@ void proximityInterrupt() {
     if (proximity == LOW && status == TIMER_GOING) {
         mood = ANGRY;
         status = HAND_DETECTED;
-        //interruptOccurred = true; 
-    } else {
+        Serial.println("Hand detected");
+    } else if(proximity == HIGH && status == TIMER_GOING) {
         mood = NORMAL;
-        //interruptOccurred = true; 
     }
 }
 
 
-void eyes_loop() {
+/*void eyes_loop() {
     if (mood == ANGRY) {
         close_eyes();
         delay(50);
@@ -153,5 +84,11 @@ void eyes_loop() {
         side_eyes(UP_RIGHT_EYE);
         delay(1500);
     }
-}
+}*/
 
+
+/*
+void loop(){
+  blink.runCoroutine();
+}
+*/

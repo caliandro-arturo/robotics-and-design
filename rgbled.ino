@@ -1,11 +1,9 @@
   
 //RGB LED
 
-#define LED0_RED 3
-#define LED0_BLUE 5
-#define LED0_GREEN 6
 
-#define LED1_RED 3
+
+/*#define LED1_RED 3
 #define LED1_BLUE 5
 #define LED1_GREEN 6
 
@@ -15,9 +13,7 @@
 
 #define LED3_RED 3
 #define LED3_BLUE 5
-#define LED3_GREEN 6
-
-
+#define LED3_GREEN 6*/
 
 
 typedef struct{
@@ -27,7 +23,7 @@ typedef struct{
   int colorState;
 } RGB_Led;
 
-RGB_Led rgbled[4];
+RGB_Led rgbled[1];
 
 
 void setLedWhite(int num){
@@ -95,7 +91,7 @@ void init_leds(){
   rgbled[0].greenpin = LED0_GREEN;
   rgbled[0].bluepin = LED0_BLUE;
   
-  rgbled[1].redpin = LED1_RED;
+  /*rgbled[1].redpin = LED1_RED;
   rgbled[1].greenpin = LED1_GREEN;
   rgbled[1].bluepin = LED1_BLUE;
 
@@ -105,14 +101,14 @@ void init_leds(){
 
   rgbled[3].redpin = LED3_RED;
   rgbled[3].greenpin = LED3_GREEN;
-  rgbled[3].bluepin = LED3_BLUE;
+  rgbled[3].bluepin = LED3_BLUE;*/
 
   for(int i= 0; i<4; i++){
-    pinMode(rgbled[i].redpin, OUTPUT);
-    pinMode(rgbled[i].greenpin, OUTPUT);
-    pinMode(rgbled[i].bluepin, OUTPUT);
-    rgbled[i].colorState = 0;
-    setLedWhite(i);
+    pinMode(rgbled[0].redpin, OUTPUT);
+    pinMode(rgbled[0].greenpin, OUTPUT);
+    pinMode(rgbled[0].bluepin, OUTPUT);
+    rgbled[0].colorState = 0;
+    setLedWhite(0);
   }
 }
 
