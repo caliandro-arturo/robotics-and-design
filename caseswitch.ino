@@ -11,6 +11,8 @@
 
 using namespace ace_routine;
 
+uint8_t currentEye[8];
+
 enum Mood {NORMAL, HAPPY, SAD, ANGRY, PISSED };
 
 volatile Mood mood;
@@ -105,19 +107,32 @@ void setup(){
 
 }
 
+void blink_happy(){
+  close_eyes();
+  delay(50);
+  side_eyes(HAPPY_EYE);
+  delay(1000);
+}
+
 COROUTINE(blink) {
   COROUTINE_LOOP() {
-     if (mood == ANGRY) {
+     //if (mood == ANGRY) {
         close_eyes();
         COROUTINE_DELAY(50);
-        front_eyes(ANGRY_EYE);
+        front_eyes(currentEye);
         COROUTINE_DELAY(1500);
-    } else if (mood == NORMAL) {
+    /*} else if (mood == NORMAL) {
         close_eyes();
         COROUTINE_DELAY(50);
         side_eyes(UP_RIGHT_EYE);
         COROUTINE_DELAY(1500);
-    }
+    } else if (mood == HAPPY){
+        close_eyes();
+        COROUTINE_DELAY(50);
+        side_eyes(HAPPY_EYE);
+        COROUTINE_DELAY(1500);
+        
+    }*/
     COROUTINE_DELAY(50);
   }
 }
@@ -136,23 +151,25 @@ void loop(){
       if(isMinuteSet==0 && isHourSet==0){
         Serial.println("Timer");
         display.showNumberDec(minute, true);
+        blink_happy();
         isMinuteSet = true;
         setLedWhite(0);
         blinkLed(0, 100, 100);
       }
       break;
     case SET_HOURS:
-      
       if(isMinuteSet==1 && isHourSet==0){
         Serial.println("Minutes set");
         display.showNumberDec(100*hour + minute, true);
+        blink_happy();
         isHourSet = true;
         setLedWhite(0);
         blinkLed(0, 100, 100);
       }
+      
       break;
     case PHONE_CHECK:
-      
+      mood = NORMAL;
       if(isMinuteSet==1 && isHourSet==1){
         Serial.println("Hours set");
         isMinuteSet = 0;
@@ -170,7 +187,7 @@ void loop(){
       //if(isMinuteSet==1 && isHourSet==1){
       //blink.runCoroutine();
       countdown();
-      
+      assignEye(UP_RIGHT_EYE);
       //}
       
       break;
@@ -182,6 +199,6 @@ void loop(){
     case TIMER_FINISHED:
       break;
   }
-
+  blink.runCoroutine();
 
 }

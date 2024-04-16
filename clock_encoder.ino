@@ -18,6 +18,7 @@ unsigned long interval = 1000;
 
 
 
+
 void increment_status(){   
   unsigned long timeNow = millis();
   if (timeNow - lastTime > DEBOUNCING_PERIOD){
@@ -108,7 +109,7 @@ void countdown() {
     // Check if it's time to update the display
     if (currentMillis - previousMillis >= (hour*interval*60*60+ interval*minute*60)) {
       previousMillis = currentMillis;
-
+    
       // Decrement minute
       if (minute > 0) {
         minute--;
@@ -120,7 +121,21 @@ void countdown() {
         }
       }
     }
+    int proximity = digitalRead(PROXIMITY_IR);
+    if(proximity ==  LOW){
+      status = HAND_DETECTED;
+      mood = ANGRY;
+   
+      assignEye(ANGRY_EYE);
+      
+      setLedRed(0);
+      //blinkLed(0, 100, 100);
+    }else{
+      mood = NORMAL;
+      assignEye(UP_RIGHT_EYE);
+    }
     currentMillis = millis(); // Update current time
+    blink.runCoroutine();
   }
 
   // Timer finished

@@ -1,7 +1,9 @@
+#define EYE_DIN 40
+#define EYE_CS 44
+#define EYE_CLK 42
 
 
-
-MATRIX7219 screen = MATRIX7219(DIN, CS, CLK, 2);
+MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
 void print_matrix(uint8_t image[8], uint8_t display = 1) {
     for (int i = 1; i <= 8; i++) {
@@ -47,6 +49,27 @@ void front_eyes(uint8_t EYE[]) {
 }
 
 #define PROXIMITY_IR 2
+void assignEye(uint8_t EYE[8]){
+  for(int i = 0; i<8; i++){
+    currentEye[i] = EYE[i];
+  }
+}
+void proximityInterrupt() {
+    int proximity = digitalRead(PROXIMITY_IR);
+    if (proximity == LOW && status == TIMER_GOING) {
+        mood = ANGRY;
+        assignEye(ANGRY_EYE);
+        blink.reset();
+        Serial.println("0");
+        Serial.println("1");
+    } else if(proximity == HIGH && status == TIMER_GOING) {
+        mood = NORMAL;
+        Serial.println("1");
+        assignEye(UP_RIGHT_EYE);
+    }
+}
+
+
 
 void eye_setup() {
     screen.begin();
@@ -55,21 +78,13 @@ void eye_setup() {
     print_matrix(UP_RIGHT_EYE, 1);
     print_matrix(UP_RIGHT_EYE, 2);
     pinMode(PROXIMITY_IR, INPUT_PULLUP); 
-    attachInterrupt(digitalPinToInterrupt(PROXIMITY_IR), proximityInterrupt, CHANGE); 
+    //attachInterrupt(digitalPinToInterrupt(PROXIMITY_IR), proximityInterrupt, RISING); 
     mood = NORMAL;
+    assignEye(UP_RIGHT_EYE);
     Serial.begin(9600);
 }
 
-void proximityInterrupt() {
-    int proximity = digitalRead(PROXIMITY_IR);
-    if (proximity == LOW && status == TIMER_GOING) {
-        mood = ANGRY;
-        status = HAND_DETECTED;
-        Serial.println("Hand detected");
-    } else if(proximity == HIGH && status == TIMER_GOING) {
-        mood = NORMAL;
-    }
-}
+
 
 
 /*void eyes_loop() {
