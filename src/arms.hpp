@@ -1,5 +1,8 @@
 #include <Arduino.h>
+#include <AceRoutine.h>
 #include <Servo.h>
+
+using namespace ace_routine;
 
 /** Representation of the arms.
  * 
@@ -9,7 +12,7 @@
  * The method `setPosition` allows to control each arm individually, so
  * it's better to rely on it.
  */
-class Arms {
+class Arms : public Coroutine {
     public:
         /** Instantiates the two arms. It is assumed that both the servos
          * are calibrated with the same values.
@@ -46,12 +49,15 @@ class Arms {
          * @param from     the starting point (in degrees)
          * @param to       the ending point (in degrees)
          * @param minDelay the minimum delay that the arms will meet
-         *                 (in milliseconds)
+         *                 (in microseconds)
          */
-        void oscillate(uint8_t from, uint8_t to, uint8_t minDelay);
+        void oscillate(uint8_t from, uint8_t to, uint16_t minDelay);
 
         /** Interrupts any movement that the arms are performing. */
         void stop();
+
+        /** Resets the maximum and minimum delay. */
+        void reset();
 
         /** Sets the specified arm at the given angle.
          * 
@@ -60,10 +66,29 @@ class Arms {
          */
         void setPosition(uint8_t armPin, uint8_t angle);
 
-        ~Arms();
+        /** Coroutine that handles the oscillation. */
+        int runCoroutine() override;
 
     private:
-        bool isMoving;
+        /** Evaluates the delay, given the angle.
+         * 
+         * @param angle the position in microseconds
+        */
+        uint16_t speed(uint16_t angle);
+        
+        /** Converts the angle in microseconds. 
+         * 
+         * @param angle the angle in the range [0, 180]
+        */
+        uint16_t angleToUs(uint8_t angle);
+        
+        bool canMove;
+        uint8_t leftArmPin;
+        uint8_t rightArmPin;
+        uint16_t leftArmFrom, leftArmTo;
+        uint16_t rightArmFrom, rightArmTo;
+        uint16_t minMicroseconds, maxMicroseconds;
+        uint16_t leftArmPos, rightArmPos;
         Servo leftArm;
         Servo rightArm;
 };

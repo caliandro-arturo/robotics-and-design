@@ -5,7 +5,7 @@
 #include "pins.hpp"
 
 uint16_t MIN_DELAY = 1200;
-uint16_t MAX_DELAY = 4000;
+uint16_t MAX_DELAY = 5000;
 
 template<typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
@@ -31,12 +31,13 @@ Arms::Arms(
       leftArmTo(0),
       rightArmTo(0),
       leftArmPos(0),
-      rightArmPos(0) {
+      rightArmPos(0),
+      canMove(false) {
     pinMode(leftArmPin, OUTPUT);
     pinMode(rightArmPin, OUTPUT);
     leftArm.attach(leftArmPin, minMicroseconds, maxMicroseconds);
     rightArm.attach(rightArmPin, minMicroseconds, maxMicroseconds);
-    leftArm.writeMicroseconds(minMicroseconds);
+    leftArm.writeMicroseconds(maxMicroseconds);
     rightArm.writeMicroseconds(minMicroseconds);
 }
 
@@ -45,8 +46,8 @@ void Arms::coverSlot(uint8_t slot) {
 
 void Arms::shake(uint8_t from, uint8_t to) {
     stop();
-    MIN_DELAY = 200;
-    MAX_DELAY = 200;
+    MIN_DELAY = 800;
+    MAX_DELAY = 800;
     oscillate(from, to, MIN_DELAY);
 }
 
