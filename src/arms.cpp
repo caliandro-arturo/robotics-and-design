@@ -5,7 +5,7 @@
 #include "pins.hpp"
 
 uint16_t MIN_DELAY = 1200;
-uint16_t MAX_DELAY = 5000;
+uint16_t MAX_DELAY = 4000;
 
 template<typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
@@ -46,8 +46,8 @@ void Arms::coverSlot(uint8_t slot) {
 
 void Arms::shake(uint8_t from, uint8_t to) {
     stop();
-    MIN_DELAY = 800;
-    MAX_DELAY = 800;
+    MIN_DELAY = 700;
+    MAX_DELAY = 700;
     oscillate(from, to, MIN_DELAY);
 }
 
@@ -68,7 +68,6 @@ void Arms::oscillate(uint8_t from, uint8_t to, uint16_t min_delay) {
     leftArmPos = fromUs;
     rightArm.writeMicroseconds(toUs);
     rightArmPos = toUs;
-    delay(1500);
     canMove = true;
 }
 
@@ -97,12 +96,9 @@ int Arms::runCoroutine() {
             rightArmPos += (rightArmTo >= rightArmFrom) ? 1 : -1;
             leftArm.writeMicroseconds(leftArmPos);
             rightArm.writeMicroseconds(rightArmPos);
-            // Serial.println(leftArmPos);
             COROUTINE_DELAY_MICROS(speed(leftArmPos));
             if (leftArmPos == leftArmTo) {
-                // Serial.println("Swapping");
                 swap(leftArmFrom, leftArmTo);
-                // Serial.println("New from: " + String(leftArmFrom) + ", new to: " + String(leftArmTo));
                 swap(rightArmFrom, rightArmTo);
             }
         }
