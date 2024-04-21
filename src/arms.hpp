@@ -68,6 +68,8 @@ class Arms : public Coroutine {
 
         /** Coroutine that handles the oscillation. */
         int runCoroutine() override;
+        
+        ~Arms();
 
     private:
         /** Evaluates the delay, given the angle.
