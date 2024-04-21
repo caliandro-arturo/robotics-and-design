@@ -1,8 +1,11 @@
 #include <Arduino.h>
+#include <AceRoutine.h>
 #include <Servo.h>
 
+using namespace ace_routine;
+
 /** Representation of the body, intended as the torso. */
-class Body {
+class Body : public Coroutine {
     public:
         /** Instantiates the body servo motor.
          *
@@ -19,7 +22,17 @@ class Body {
          *
          * @param pos   the desired orientation of the body.
         */
-        void setPosition(uint8_t pos);
+        void setPosition(int8_t pos);
+
+        int runCoroutine() override;
+
+        /** Returns the movement state of the body. */
+        bool isMoving();
 
     private:
+        uint16_t speed();
+        uint16_t angleToUs(int8_t angle);
+        uint16_t position, start, destination;
+        uint16_t minMicroseconds, maxMicroseconds;
+        Servo body;
 };
