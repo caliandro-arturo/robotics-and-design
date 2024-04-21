@@ -29,6 +29,8 @@ class Body : public Coroutine {
         /** Returns the movement state of the body. */
         bool isMoving();
 
+        ~Body();
+
     private:
         uint16_t speed();
         uint16_t angleToUs(int8_t angle);
