@@ -1,11 +1,12 @@
 #include <Arduino.h>
-#include <Servo.h>
 #include <AceRoutine.h>
+#include <Servo.h>
 #include "arms.hpp"
 #include "pins.hpp"
+#include "servoCalibration.hpp"
 
-uint16_t MIN_DELAY = 1200;
-uint16_t MAX_DELAY = 4000;
+uint16_t minDelay = ARMS_MIN_DELAY;
+uint16_t maxDelay = ARMS_MAX_DELAY;
 
 template<typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
@@ -42,20 +43,25 @@ Arms::Arms(
 }
 
 void Arms::coverSlot(uint8_t slot) {
+    // TODO
 }
 
 void Arms::shake(uint8_t from, uint8_t to) {
     stop();
-    MIN_DELAY = 700;
-    MAX_DELAY = 700;
-    oscillate(from, to, MIN_DELAY);
+    oscillate(from, to, ARMS_SHAKE_DELAY, ARMS_SHAKE_DELAY);
 }
 
-void Arms::oscillate(uint8_t from, uint8_t to, uint16_t min_delay) {
+void Arms::oscillate(
+    uint8_t from,
+    uint8_t to,
+    uint16_t minDelay,
+    uint16_t maxDelay) {
+
     stop();
     uint16_t fromUs = angleToUs(from);
     uint16_t toUs = angleToUs(to);
-    MIN_DELAY = min_delay;
+    ::minDelay = minDelay;
+    ::maxDelay = maxDelay;
     if (leftArmTo - leftArmFrom < 0) {
         swap(fromUs, toUs);
         swap(from, to);
@@ -76,8 +82,8 @@ void Arms::stop() {
 }
 
 void Arms::reset() {
-    MIN_DELAY = 1200;
-    MAX_DELAY = 4000;
+    minDelay = ARMS_MIN_DELAY;
+    maxDelay = ARMS_MAX_DELAY;
 }
 
 void Arms::setPosition(uint8_t armPin, uint8_t angle) {
@@ -106,17 +112,17 @@ int Arms::runCoroutine() {
 }
 
 uint16_t Arms::speed(uint16_t angle) {
-    if (MAX_DELAY == MIN_DELAY)
-        return MAX_DELAY;
+    if (maxDelay == minDelay)
+        return maxDelay;
     static uint16_t min = min(leftArmFrom, leftArmTo);
     static uint16_t max = max(leftArmFrom, leftArmTo);
-    return (MAX_DELAY - MIN_DELAY) / 2.0
+    return (maxDelay - minDelay) / 2.0
                * (cos(
                       2 * PI
                       * ((double)angle - min)
                       / (max - min))
                   + 1)
-           + MIN_DELAY;
+           + minDelay;
 }
 
 uint16_t Arms::angleToUs(uint8_t angle) {

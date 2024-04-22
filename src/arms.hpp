@@ -50,8 +50,13 @@ class Arms : public Coroutine {
          * @param to       the ending point (in degrees)
          * @param minDelay the minimum delay that the arms will meet
          *                 (in microseconds)
+         * @param maxDelay the maximum delay that the arms will meet
+         *                 (in microseconds)
          */
-        void oscillate(uint8_t from, uint8_t to, uint16_t minDelay);
+        void oscillate(uint8_t from,
+                       uint8_t to,
+                       uint16_t minDelay,
+                       uint16_t maxDelay);
 
         /** Interrupts any movement that the arms are performing. */
         void stop();
@@ -68,7 +73,7 @@ class Arms : public Coroutine {
 
         /** Coroutine that handles the oscillation. */
         int runCoroutine() override;
-        
+
         ~Arms();
 
     private:
@@ -77,13 +82,13 @@ class Arms : public Coroutine {
          * @param angle the position in microseconds
         */
         uint16_t speed(uint16_t angle);
-        
+
         /** Converts the angle in microseconds. 
          * 
          * @param angle the angle in the range [0, 180]
         */
         uint16_t angleToUs(uint8_t angle);
-        
+
         bool canMove;
         uint8_t leftArmPin;
         uint8_t rightArmPin;

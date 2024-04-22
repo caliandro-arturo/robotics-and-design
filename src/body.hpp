@@ -20,7 +20,7 @@ class Body : public Coroutine {
         /** Moves the body setting its position.
          * The provided angle should be in the range [-90, 90].
          *
-         * @param pos   the desired orientation of the body.
+         * @param pos   the desired orientation of the body
         */
         void setPosition(int8_t pos);
 
