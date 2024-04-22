@@ -11,7 +11,6 @@ class Ears {
          * @param rightEarPin       the right ear control pin
          * @param minMicroseconds   the time representing 0° (in microseconds)
          * @param maxMicroseconds   the time representing 180° (in microseconds)
-         * 
         */
         Ears(uint8_t leftEarPin,
              uint8_t rightEarPin,
@@ -24,6 +23,9 @@ class Ears {
          * @param angle     the position that the ear must reach (in degrees)
         */
         void move(uint8_t earPin, uint16_t pos);
+        
+        ~Ears();
     private:
         Servo leftEar, rightEar;
+        uint8_t leftEarPin, rightEarPin;
 };
