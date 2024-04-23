@@ -10,8 +10,8 @@
 #ifndef ServoCalibration
 #define ServoCalibration
 
-#define ARMS_MIN
-#define ARMS_MAX
+#define ARMS_MIN 500
+#define ARMS_MAX 2070
 #define ARMS_MIN_DELAY 1200
 #define ARMS_MAX_DELAY 4000
 #define ARMS_SHAKE_DELAY 700
@@ -37,13 +37,13 @@
 */
 #define BODY_DELTA 7
 
-#define EARS_MIN
-#define EARS_MAX
+#define EARS_MIN 500
+#define EARS_MAX 2400
 /* No delay is expected for ears movement right now. */
 
-#define HEAD_MIN
-#define HEAD_MAX
-#define HEAD_MIN_DELAY
-#define HEAD_MAX_DELAY
+#define HEAD_MIN 500
+#define HEAD_MAX 2400
+#define HEAD_MIN_DELAY 600
+#define HEAD_MAX_DELAY 2000
 
 #endif
