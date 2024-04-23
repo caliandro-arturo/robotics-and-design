@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <stdint.h>
 #include <Servo.h>
 
 /** Representation of the ears. */

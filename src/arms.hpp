@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <stdint.h>
 #include <AceRoutine.h>
 #include <Servo.h>
 
