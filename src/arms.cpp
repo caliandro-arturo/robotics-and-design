@@ -59,20 +59,20 @@ void Arms::oscillate(
     stop();
     uint16_t fromUs = angleToUs(from);
     uint16_t toUs = angleToUs(to);
-    ::minDelay = minDelay;
-    ::maxDelay = maxDelay;
+    this->minDelay = minDelay;
+    this->maxDelay = maxDelay;
     if (leftArmTo - leftArmFrom < 0) {
         swap(fromUs, toUs);
         swap(from, to);
     }
     leftArmFrom = fromUs;
     leftArmTo = toUs;
-    rightArmFrom = toUs;
-    rightArmTo = fromUs;
+    rightArmFrom = fromUs;
+    rightArmTo = toUs;
     leftArm.writeMicroseconds(fromUs);
     leftArmPos = fromUs;
     rightArm.writeMicroseconds(toUs);
-    rightArmPos = toUs;
+    rightArmPos = fromUs;
     canMove = true;
 }
 
