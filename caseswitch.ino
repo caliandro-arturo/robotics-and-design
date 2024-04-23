@@ -1,13 +1,10 @@
-#include <MATRIX7219.h>
+
 #include <AceRoutine.h>
 #include <EncoderButton.h>
 #include <TM1637Display.h>
-#include <AceRoutine.h>
 #include <MATRIX7219.h>
-#define DIN 11
-#define CS 12
-#define CLK 13
-#define PROXIMITY_IR 19
+
+#define PROXIMITY_IR 6
 
 using namespace ace_routine;
 
@@ -16,7 +13,6 @@ uint8_t currentEye[8];
 enum Mood {NORMAL, HAPPY, SAD, ANGRY, PISSED };
 
 volatile Mood mood;
-//volatile bool interruptOccurred = false;
 int oldProximity;
 
 uint8_t UP_RIGHT_EYE[] = {
@@ -40,6 +36,19 @@ uint8_t  ANGRY_EYE[] = {
     0b00111100,
     0b00000000
 };
+
+
+uint8_t  SAD_EYE[] = {
+    0b00000000,
+    0b00000100,
+    0b00001110,
+    0b00011110,
+    0b00100110,
+    0b01100110,
+    0b00111100,
+    0b00000000
+};
+
 
 uint8_t  FRONT_EYE[] = {
     0b00000000,
@@ -75,8 +84,8 @@ uint8_t  PISSED_EYE[] = {
 };
 
 
-#define CLK 3   // clock pin
-#define DIO 2   // data pin
+#define TIMER_CLK 5   
+#define TIMER_DIO 4  
 
 
 int setMinute;
@@ -88,11 +97,11 @@ bool isHourSet;
 
 int minute;
 int hour;
+volatile int encoderPos = 0;
 
 
 
-
-TM1637Display display(CLK, DIO);
+TM1637Display display(TIMER_CLK, TIMER_DIO);
 
 bool phonePresent;
 enum Status {START, SET_MINUTES, SET_HOURS, PHONE_CHECK, TIMER_GOING, HAND_DETECTED, TIMER_FINISHED};
@@ -101,39 +110,19 @@ volatile Status status;
 
 void setup(){
   status = START;
-  //init_phone_slots();
   eye_setup();
   clock_setup();
-
+  //init_phone_slots();
 }
 
-void blink_happy(){
-  close_eyes();
-  delay(50);
-  side_eyes(HAPPY_EYE);
-  delay(1000);
-}
+
 
 COROUTINE(blink) {
   COROUTINE_LOOP() {
-     //if (mood == ANGRY) {
-        close_eyes();
-        COROUTINE_DELAY(50);
-        front_eyes(currentEye);
-        COROUTINE_DELAY(1500);
-    /*} else if (mood == NORMAL) {
-        close_eyes();
-        COROUTINE_DELAY(50);
-        side_eyes(UP_RIGHT_EYE);
-        COROUTINE_DELAY(1500);
-    } else if (mood == HAPPY){
-        close_eyes();
-        COROUTINE_DELAY(50);
-        side_eyes(HAPPY_EYE);
-        COROUTINE_DELAY(1500);
-        
-    }*/
-    COROUTINE_DELAY(50);
+      close_eyes();
+      COROUTINE_DELAY(50);
+      front_eyes(currentEye);
+      COROUTINE_DELAY(1500);
   }
 }
 
@@ -145,28 +134,35 @@ void loop(){
       //Serial.println(status);
       //init_phone_slots();
       //check_phone();
+      increment_minutes();
+      display.showNumberDec(minute, true);
       break;
     case SET_MINUTES:
       
       if(isMinuteSet==0 && isHourSet==0){
+        reset_encoder();
         Serial.println("Timer");
-        display.showNumberDec(minute, true);
-        blink_happy();
         isMinuteSet = true;
+        setMinute = minute;
+        display.showNumberDec(setMinute, true);
+        blink_happy();
         setLedWhite(0);
         blinkLed(0, 100, 100);
       }
+      increment_hours();
+      display.showNumberDec(100*hour + minute, true);
       break;
     case SET_HOURS:
       if(isMinuteSet==1 && isHourSet==0){
         Serial.println("Minutes set");
-        display.showNumberDec(100*hour + minute, true);
+        isHourSet = true;
+        setHour = hour;
+        display.showNumberDec(100*setHour + setMinute, true);
         blink_happy();
         isHourSet = true;
         setLedWhite(0);
         blinkLed(0, 100, 100);
       }
-      
       break;
     case PHONE_CHECK:
       mood = NORMAL;
@@ -187,7 +183,7 @@ void loop(){
       //if(isMinuteSet==1 && isHourSet==1){
       //blink.runCoroutine();
       countdown();
-      assignEye(UP_RIGHT_EYE);
+      assignEye(FRONT_EYE);
       //}
       
       break;
@@ -197,6 +193,7 @@ void loop(){
       //blink.runCoroutine();
       break;
     case TIMER_FINISHED:
+      assignEye(FRONT_EYE);
       break;
   }
   blink.runCoroutine();

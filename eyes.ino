@@ -1,8 +1,10 @@
+
 #define EYE_DIN 40
 #define EYE_CS 44
 #define EYE_CLK 42
+unsigned long lastTimeEye = 0UL;
 
-
+#define PROXIMITY_IR 6
 MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
 void print_matrix(uint8_t image[8], uint8_t display = 1) {
@@ -48,62 +50,48 @@ void front_eyes(uint8_t EYE[]) {
     }
 }
 
-#define PROXIMITY_IR 2
+
 void assignEye(uint8_t EYE[8]){
   for(int i = 0; i<8; i++){
     currentEye[i] = EYE[i];
   }
 }
+
+void blink_happy(){
+  close_eyes();
+  delay(50);
+  front_eyes(HAPPY_EYE);
+  delay(1000);
+}
+
+
 void proximityInterrupt() {
+    unsigned long timeNow = millis();
     int proximity = digitalRead(PROXIMITY_IR);
-    if (proximity == LOW && status == TIMER_GOING) {
+    if (proximity == LOW && status == TIMER_GOING && timeNow - lastTimeEye > DEBOUNCING_PERIOD) {
         mood = ANGRY;
         assignEye(ANGRY_EYE);
         blink.reset();
         Serial.println("0");
         Serial.println("1");
-    } else if(proximity == HIGH && status == TIMER_GOING) {
+    } else if(proximity == HIGH && status == TIMER_GOING && timeNow - lastTimeEye > DEBOUNCING_PERIOD) {
         mood = NORMAL;
         Serial.println("1");
-        assignEye(UP_RIGHT_EYE);
+        assignEye(FRONT_EYE);
     }
+    lastTimeEye = timeNow;
 }
-
 
 
 void eye_setup() {
     screen.begin();
     screen.setBrightness(1);
     screen.clear();
-    print_matrix(UP_RIGHT_EYE, 1);
-    print_matrix(UP_RIGHT_EYE, 2);
     pinMode(PROXIMITY_IR, INPUT_PULLUP); 
-    //attachInterrupt(digitalPinToInterrupt(PROXIMITY_IR), proximityInterrupt, RISING); 
     mood = NORMAL;
-    assignEye(UP_RIGHT_EYE);
+    assignEye(FRONT_EYE);
+    front_eyes(currentEye);
     Serial.begin(9600);
 }
 
 
-
-
-/*void eyes_loop() {
-    if (mood == ANGRY) {
-        close_eyes();
-        delay(50);
-        front_eyes(ANGRY_EYE);
-        delay(1500);
-    } else if (mood == NORMAL) {
-        close_eyes();
-        delay(50);
-        side_eyes(UP_RIGHT_EYE);
-        delay(1500);
-    }
-}*/
-
-
-/*
-void loop(){
-  blink.runCoroutine();
-}
-*/
