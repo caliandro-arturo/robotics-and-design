@@ -77,6 +77,15 @@ class Arms : public Coroutine {
         ~Arms();
 
     private:
+        bool canMove;
+        uint8_t leftArmPin, rightArmPin;
+        uint16_t leftArmPos, rightArmPos;
+        uint16_t leftArmFrom, leftArmTo;
+        uint16_t rightArmFrom, rightArmTo;
+        uint16_t minMicroseconds, maxMicroseconds;
+        uint16_t minDelay, maxDelay;
+        Servo leftArm, rightArm;
+
         /** Evaluates the delay, given the angle.
          * 
          * @param angle the position in microseconds
@@ -88,14 +97,4 @@ class Arms : public Coroutine {
          * @param angle the angle in the range [0, 180]
         */
         uint16_t angleToUs(uint8_t angle);
-
-        bool canMove;
-        uint8_t leftArmPin;
-        uint8_t rightArmPin;
-        uint16_t leftArmFrom, leftArmTo;
-        uint16_t rightArmFrom, rightArmTo;
-        uint16_t minMicroseconds, maxMicroseconds;
-        uint16_t leftArmPos, rightArmPos;
-        Servo leftArm;
-        Servo rightArm;
 };
