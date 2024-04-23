@@ -2,8 +2,10 @@
 #include <AceRoutine.h>
 #include <Servo.h>
 
+using namespace ace_routine;
+
 /** Representation of the head. */
-class Head {
+class Head : public Coroutine {
     public:
         /** Instantiates the head, setting its position to the center
          * activating the pet sensor.
@@ -22,7 +24,7 @@ class Head {
          * 
          * @param pos   the position to reach (in degrees)
         */
-        void setPosition(uint8_t pos);
+        void setPosition(int8_t pos);
 
         /** Shakes the head at the maximum speed.
          * The movement should be interrupted manually.
@@ -30,13 +32,18 @@ class Head {
          * @param from  the starting angle (in degrees)
          * @param to    the ending angle (in degrees)
         */
-        void shake(uint8_t from, uint8_t to);
+        void shake(int8_t from, int8_t to);
 
         /** Stops any movement occurring to the head. */
         void stop();
 
+        int runCoroutine() override;
+
+        ~Head();
     private:
         Servo head;
-        Servo leftEar, rightEar;
-        bool isMoving;
+        uint8_t position;
+        uint8_t from, to;
+        uint16_t minDelay, maxDelay;
+        bool canMove;
 };
