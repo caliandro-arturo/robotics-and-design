@@ -1,7 +1,3 @@
-  
-//RGB LED
-
-#define PROXIMITY_IR 6
 
 /*#define LED1_RED 3
 #define LED1_BLUE 5

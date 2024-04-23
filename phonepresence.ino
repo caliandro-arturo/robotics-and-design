@@ -5,7 +5,6 @@
 #define SLOT3 1
 
 
-
 typedef struct{
   int pin;
   bool phoneIn; 

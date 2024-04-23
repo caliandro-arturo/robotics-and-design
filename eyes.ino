@@ -1,10 +1,4 @@
 
-#define EYE_DIN 40
-#define EYE_CS 44
-#define EYE_CLK 42
-unsigned long lastTimeEye = 0UL;
-
-#define PROXIMITY_IR 6
 MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
 void print_matrix(uint8_t image[8], uint8_t display = 1) {

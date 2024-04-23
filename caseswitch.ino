@@ -6,6 +6,36 @@
 
 #define PROXIMITY_IR 6
 
+#define TIMER_CLK 5   
+#define TIMER_DIO 4  
+
+#define ENCODER_SW 18
+#define ENCODER_A 19
+#define ENCODER_B 20
+#define DEBOUNCING_PERIOD 100
+
+#define LED0_RED 11
+#define LED0_BLUE 9
+#define LED0_GREEN 10
+
+#define EYE_DIN 40
+#define EYE_CS 44
+#define EYE_CLK 42
+
+#define PROXIMITY_IR 6
+
+unsigned long lastTimeEye = 0UL;
+int setMinute;
+int setHour;
+byte lastButtonState = HIGH;
+bool isMinuteSet;
+bool isHourSet;
+int minute;
+int hour;
+volatile int encoderPos = 0;
+int oldProximity;
+bool phonePresent;
+
 using namespace ace_routine;
 
 uint8_t currentEye[8];
@@ -13,7 +43,11 @@ uint8_t currentEye[8];
 enum Mood {NORMAL, HAPPY, SAD, ANGRY, PISSED };
 
 volatile Mood mood;
-int oldProximity;
+
+enum Status {START, SET_MINUTES, SET_HOURS, PHONE_CHECK, TIMER_GOING, HAND_DETECTED, TIMER_FINISHED};
+
+volatile Status status;
+
 
 uint8_t UP_RIGHT_EYE[] = {
     0b00000000,
@@ -84,38 +118,8 @@ uint8_t  PISSED_EYE[] = {
 };
 
 
-#define TIMER_CLK 5   
-#define TIMER_DIO 4  
-
-
-int setMinute;
-int setHour;
-byte lastButtonState = HIGH;
-
-bool isMinuteSet;
-bool isHourSet;
-
-int minute;
-int hour;
-volatile int encoderPos = 0;
-
-
 
 TM1637Display display(TIMER_CLK, TIMER_DIO);
-
-bool phonePresent;
-enum Status {START, SET_MINUTES, SET_HOURS, PHONE_CHECK, TIMER_GOING, HAND_DETECTED, TIMER_FINISHED};
-
-volatile Status status;
-
-void setup(){
-  status = START;
-  eye_setup();
-  clock_setup();
-  //init_phone_slots();
-}
-
-
 
 COROUTINE(blink) {
   COROUTINE_LOOP() {
@@ -126,7 +130,12 @@ COROUTINE(blink) {
   }
 }
 
-
+void setup(){
+  status = START;
+  eye_setup();
+  clock_setup();
+  //init_phone_slots();
+}
 
 void loop(){
   switch(status){
@@ -135,7 +144,7 @@ void loop(){
       //init_phone_slots();
       //check_phone();
       increment_minutes();
-      display.showNumberDec(minute, true);
+      display.showNumberDecEx(minute, 0b01000000, true);
       break;
     case SET_MINUTES:
       
@@ -144,20 +153,20 @@ void loop(){
         Serial.println("Timer");
         isMinuteSet = true;
         setMinute = minute;
-        display.showNumberDec(setMinute, true);
+        display.showNumberDecEx(setMinute, 0b01000000, true);
         blink_happy();
         setLedWhite(0);
         blinkLed(0, 100, 100);
       }
       increment_hours();
-      display.showNumberDec(100*hour + minute, true);
+      display.showNumberDecEx(100*hour + minute, 0b01000000, true);
       break;
     case SET_HOURS:
       if(isMinuteSet==1 && isHourSet==0){
         Serial.println("Minutes set");
         isHourSet = true;
         setHour = hour;
-        display.showNumberDec(100*setHour + setMinute, true);
+        display.showNumberDecEx(100*setHour + setMinute, 0b01000000, true);
         blink_happy();
         isHourSet = true;
         setLedWhite(0);

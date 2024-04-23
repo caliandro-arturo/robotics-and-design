@@ -1,14 +1,4 @@
 
-#define ENCODER_SW 18
-#define ENCODER_A 19
-#define ENCODER_B 20
-#define DEBOUNCING_PERIOD 100
-
-
-#define LED0_RED 11
-#define LED0_BLUE 9
-#define LED0_GREEN 10
-
 volatile int counter;
 int lastEnA = LOW;
 unsigned long lastTime = 0UL;
@@ -90,18 +80,18 @@ void countdown() {
   unsigned long currentMillis = millis();
 
   while (hour > 0 || minute > 0) {
-    display.showNumberDec(100 * hour + minute, true);
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     if (currentMillis - previousMillis >= (hour*interval*60*60+ interval*minute*60)) {
       previousMillis = currentMillis;
 
       if (minute > 0) {
         minute--;
-        display.showNumberDec(100*hour + minute, true);
+        display.showNumberDecEx(100*hour + minute, 0b01000000, true);
       } else {
         if (hour > 0) {
           hour--;
           minute = 59;
-          display.showNumberDec(100*hour + minute, true);
+          display.showNumberDecEx(100*hour + minute, 0b01000000, true);
         }
       }
     }
