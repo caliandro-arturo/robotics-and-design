@@ -36,5 +36,6 @@ class Body : public Coroutine {
         uint16_t angleToUs(int8_t angle);
         uint16_t position, start, destination;
         uint16_t minMicroseconds, maxMicroseconds;
+        uint16_t minDelay, maxDelay;
         Servo body;
 };

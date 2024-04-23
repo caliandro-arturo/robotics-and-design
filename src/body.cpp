@@ -1,11 +1,11 @@
 #include "body.hpp"
 #include "servoCalibration.hpp"
 
-uint16_t minDelay = BODY_MIN_DELAY;
-uint16_t maxDelay = BODY_MAX_DELAY;
-
 Body::Body(uint8_t bodyPin, uint16_t minMicroseconds, uint16_t maxMicroseconds)
-    : minMicroseconds(minMicroseconds), maxMicroseconds(maxMicroseconds) {
+    : minMicroseconds(minMicroseconds),
+      maxMicroseconds(maxMicroseconds),
+      minDelay(BODY_MIN_DELAY),
+      maxDelay(BODY_MAX_DELAY) {
     pinMode(bodyPin, OUTPUT);
     body.attach(bodyPin, minMicroseconds, maxMicroseconds);
     uint16_t init = (maxMicroseconds + minMicroseconds) / 2;  // this is 0°

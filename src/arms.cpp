@@ -5,9 +5,6 @@
 #include "pins.hpp"
 #include "servoCalibration.hpp"
 
-uint16_t minDelay = ARMS_MIN_DELAY;
-uint16_t maxDelay = ARMS_MAX_DELAY;
-
 template<typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
@@ -33,6 +30,8 @@ Arms::Arms(
       rightArmTo(0),
       leftArmPos(0),
       rightArmPos(0),
+      minDelay(ARMS_MIN_DELAY),
+      maxDelay(ARMS_MAX_DELAY),
       canMove(false) {
     pinMode(leftArmPin, OUTPUT);
     pinMode(rightArmPin, OUTPUT);
