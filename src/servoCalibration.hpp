@@ -37,8 +37,8 @@
 */
 #define BODY_DELTA 7
 
-#define EARS_MIN 500
-#define EARS_MAX 2400
+#define EARS_MIN 550
+#define EARS_MAX 2375
 /* No delay is expected for ears movement right now. */
 
 #define HEAD_MIN 500
