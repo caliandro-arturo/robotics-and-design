@@ -9,7 +9,7 @@ class Head : public Coroutine {
     public:
         /** Instantiates the head, setting its position to the center
          * activating the pet sensor.
-         * 
+         *
          * @param headPin           the head control pin
          * @param petSensorPin      the pet sensor pin
          * @param minMicroseconds   the time representing 0° (in microseconds)
@@ -21,14 +21,14 @@ class Head : public Coroutine {
              uint16_t maxMicroseconds);
 
         /** Moves the head to the selected position.
-         * 
+         *
          * @param pos   the position to reach (in degrees)
         */
         void setPosition(int8_t pos);
 
         /** Shakes the head at the maximum speed.
          * The movement should be interrupted manually.
-         * 
+         *
          * @param from  the starting angle (in degrees)
          * @param to    the ending angle (in degrees)
         */

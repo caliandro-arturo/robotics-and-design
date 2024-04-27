@@ -5,10 +5,10 @@
 using namespace ace_routine;
 
 /** Representation of the arms.
- * 
+ *
  * Both arms are handled here, so the class exposes general methods to
  * move both of them contemporarily.
- * 
+ *
  * The method `setPosition` allows to control each arm individually, so
  * it's better to rely on it.
  */
@@ -30,14 +30,14 @@ class Arms : public Coroutine {
              uint16_t maxMicroseconds);
 
         /** Covers the specified phone slot.
-         * 
+         *
          * @param slot the phone slot to cover
          */
         void coverSlot(uint8_t slot);
 
         /** Shakes briefly. This can be used when the fastest speed is
          * desired.
-         * 
+         *
          * @param from  the starting point (in degrees)
          * @param to    the ending point (in degrees)
          */
@@ -45,7 +45,7 @@ class Arms : public Coroutine {
 
         /** Set a constant oscillation movement. It is used to set
          *  a continuous movement, to be halted manually.
-         * 
+         *
          * @param from     the starting point (in degrees)
          * @param to       the ending point (in degrees)
          * @param minDelay the minimum delay that the arms will meet
@@ -65,7 +65,7 @@ class Arms : public Coroutine {
         void reset();
 
         /** Sets the specified arm at the given angle.
-         * 
+         *
          * @param armPin   the arm to move
          * @param angle    the angle (in degrees)
          */
@@ -87,13 +87,13 @@ class Arms : public Coroutine {
         Servo leftArm, rightArm;
 
         /** Evaluates the delay, given the angle.
-         * 
+         *
          * @param angle the position in microseconds
         */
         uint16_t speed(uint16_t angle);
 
-        /** Converts the angle in microseconds. 
-         * 
+        /** Converts the angle in microseconds.
+         *
          * @param angle the angle in the range [0, 180]
         */
         uint16_t angleToUs(uint8_t angle);

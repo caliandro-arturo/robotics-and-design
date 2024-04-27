@@ -11,7 +11,7 @@ class Body : public Coroutine {
          *
          * @param bodyPin           the body control pin
          * @param minMicroseconds   the time representing 0° (in microseconds)
-         * @param maxMicroseconds   the time representing 180° (in microseconds) 
+         * @param maxMicroseconds   the time representing 180° (in microseconds)
         */
         Body(uint8_t bodyPin,
              uint16_t minMicroseconds,

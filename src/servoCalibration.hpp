@@ -20,11 +20,11 @@
 #define BODY_MAX 2260
 #define BODY_MIN_DELAY 800
 #define BODY_MAX_DELAY 2000
-/** 
+/**
  * It can happen that the servo moves less than the theoretical 180 degrees.
  * It is possible to restrict the maximum distance from the central position
  * by specifying here the missing angles to reach 90.
- * 
+ *
  * The calibration should be done by finding the maximum (or minimum) servo
  * position (in microseconds) plugging the gear to the theoretical 90 (or -90)
  * degree position, finding the opposite extreme position (so the minimum
