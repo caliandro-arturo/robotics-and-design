@@ -31,8 +31,15 @@
 #define LED3_BLUE
 #define LED3_GREEN
 
-#define ENCODER_CW
-#define ENCODER_DT
-#define ENCODER_SW
+// Plug the encoder pins to pins of the same I/O port
+#define ENCODER_CLK 10
+#define ENCODER_DT 11
+#define ENCODER_SW 12
+#define ENCODER_PINS PINB
+#define ENCODER_PCMSK PCMSK0
+#define ENCODER_VEC PCINT0_vect
+
+#define DISPLAY_CLK 6
+#define DISPLAY_DIO 7
 
 #endif
