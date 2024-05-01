@@ -90,22 +90,7 @@ void Eyes::assignEye(uint8_t EYE[8]) {
         currentEye[i] = EYE[i];
     }
 }
-/*
-int Arms::runCoroutine() {
-    COROUTINE_LOOP() {
-        if (canMove) {
-            leftArmPos += (leftArmTo >= leftArmFrom) ? 1 : -1;
-            rightArmPos += (rightArmTo >= rightArmFrom) ? 1 : -1;
-            leftArm.writeMicroseconds(leftArmPos);
-            rightArm.writeMicroseconds(rightArmPos);
-            COROUTINE_DELAY_MICROS(speed(leftArmPos));
-            if (leftArmPos == leftArmTo) {
-                swap(leftArmFrom, leftArmTo);
-                swap(rightArmFrom, rightArmTo);
-            }
-        }
-    }
-}*/
+
 
 int Eyes::runCoroutine() {
   COROUTINE_LOOP() {
