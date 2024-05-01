@@ -181,8 +181,11 @@ void loop(){
         isHourSet = 0;
         setLedGreen(0);
         blinkLed(0, 100, 100);
-        //if(phonePresent) //if at least one phone is inside, the timer starts
-          status = TIMER_GOING;
+      } 
+      check_phone();
+      if(phonePresent == true){
+        Serial.println("ok");
+        status = TIMER_GOING;
       }
       break;
     case TIMER_GOING:

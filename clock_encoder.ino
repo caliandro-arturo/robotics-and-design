@@ -22,8 +22,6 @@ void increment_minutes(){
 }
 
 
-
-
 void increment_status(){   
   unsigned long timeNow = millis();
   if (timeNow - lastTime > DEBOUNCING_PERIOD){
