@@ -79,6 +79,7 @@ void countdown() {
 
   if (hour > 0 || minute > 0) {
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    
     if (currentMillis - previousMillis >= 60000/*(hour*interval*60*60+ interval*minute*60)*/) {
       previousMillis = currentMillis;
       Serial.println("we");
@@ -106,19 +107,8 @@ void countdown() {
     currentMillis = millis();
     blink.runCoroutine();
   }else{ 
-
-    Serial.println("Time finished!");
-    setLedGreen(0);
-    assignEye(FRONT_EYE);
-    isMinuteSet = false;
-    isHourSet = false;
-    minute = 0;
-    setHour = 0;
-    setMinute = 0;
-    reset_encoder();
-    status = START;
-    blinkLed(0, 100, 100);
-    display.showNumberDecEx(0x00, 0b01000000, true); 
+    status = TIMER_FINISHED;
+   
   }
 }
 

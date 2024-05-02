@@ -200,12 +200,24 @@ void loop(){
       
       break;
     case HAND_DETECTED:
+    //would delete it!!!!!
       setLedRed(0);
       blinkLed(0, 100, 100);
       //blink.runCoroutine();
       break;
     case TIMER_FINISHED:
+      Serial.println("Time finished!");
+      setLedGreen(0);
       assignEye(FRONT_EYE);
+      isMinuteSet = false;
+      isHourSet = false;
+      minute = 0;
+      setHour = 0;
+      setMinute = 0;
+      reset_encoder();
+      blinkLed(0, 100, 100);
+      display.showNumberDecEx(0x00, 0b01000000, true);
+      status = START;
       break;
   }
   blink.runCoroutine();
