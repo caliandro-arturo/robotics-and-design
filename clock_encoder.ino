@@ -30,9 +30,6 @@ void increment_status(){
     else if (status == SET_MINUTES){
       status = SET_HOURS;
       //setMinute = minute;
-    }else if (status == SET_HOURS){
-      status = PHONE_CHECK;
-      //setHour = hour;
     }
     lastTime = timeNow;
   }
