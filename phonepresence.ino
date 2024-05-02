@@ -45,5 +45,4 @@ void check_phone(){
  // }
  // if (count>0)
   //  phonePresent = true;
-  Serial.println(phonePresent);
 }
