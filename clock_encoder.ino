@@ -102,8 +102,9 @@ void countdown() {
     }
 
     currentMillis = millis();
-    
+
   }else{ 
+    previousMillis = 0;
     status = TIMER_FINISHED;
    
   }
