@@ -128,8 +128,21 @@ Eyes eyes;
 
 TM1637Display display(TIMER_CLK, TIMER_DIO);
 
-
 void setup(){
+  eyes.eye_setup();
+  eyes.assignEye(ANGRY_EYE);
+  Serial.begin(9600);
+ 
+}
+
+void loop(){
+  
+  eyes.runCoroutine();
+  //
+
+}
+
+/*void setup(){
   status = START;
   eyes.eye_setup();
   clock_setup();
@@ -228,4 +241,4 @@ void loop(){
   }
   eyes.runCoroutine();
 
-}
+}*/

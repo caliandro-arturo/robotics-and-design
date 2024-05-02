@@ -5,6 +5,13 @@
 
 MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
+
+Eyes::Eyes() {
+    
+    lastTimeEye = 0;
+}
+
+
 const uint8_t HAPPY_EYE[8] = {
     B00111100,
     B01000010,
@@ -37,10 +44,6 @@ const uint8_t FRONT_EYE[8] = {
     B11111111,
     B11111111
 };
-
-Eyes::Eyes() {
-    lastTimeEye = 0;
-}
 
 void Eyes::print_matrix(uint8_t image[8], uint8_t display) {
     for (int i = 1; i <= 8; i++) {
@@ -95,9 +98,10 @@ void Eyes::assignEye(uint8_t EYE[8]) {
 int Eyes::runCoroutine() {
   COROUTINE_LOOP() {
     close_eyes();
-    COROUTINE_DELAY_MICROS(50);
+    COROUTINE_DELAY(50);
     front_eyes(currentEye);
-    COROUTINE_DELAY_MICROS(1500);
+  
+    COROUTINE_DELAY(1500);
   }
 }
 
