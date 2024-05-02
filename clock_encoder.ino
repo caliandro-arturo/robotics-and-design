@@ -7,7 +7,7 @@ unsigned long previousMillis = 0;
 unsigned long interval = 1000;
 
 volatile int lastEncoded = 0;
-
+unsigned long currentMillis;
 
 void reset_encoder(){
   encoderPos = 0;
@@ -74,14 +74,14 @@ void clock_setup() {
 
 
 void countdown() {
-  Serial.println("Timer started!");
-  unsigned long currentMillis = millis();
+  //Serial.println("Timer started!");
+  currentMillis = millis();
 
-  while (hour > 0 || minute > 0) {
+  if (hour > 0 || minute > 0) {
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
-    if (currentMillis - previousMillis >= (hour*interval*60*60+ interval*minute*60)) {
+    if (currentMillis - previousMillis >= 60000/*(hour*interval*60*60+ interval*minute*60)*/) {
       previousMillis = currentMillis;
-
+      Serial.println("we");
       if (minute > 0) {
         minute--;
         display.showNumberDecEx(100*hour + minute, 0b01000000, true);
@@ -95,7 +95,7 @@ void countdown() {
     }
     int proximity = digitalRead(PROXIMITY_IR);
     if(proximity ==  LOW){
-      status = HAND_DETECTED;
+      //status = HAND_DETECTED;
       mood = ANGRY;
       assignEye(ANGRY_EYE);
       setLedRed(0);
@@ -105,7 +105,7 @@ void countdown() {
     }
     currentMillis = millis();
     blink.runCoroutine();
-  } 
+  }else{ 
 
     Serial.println("Time finished!");
     setLedGreen(0);
@@ -119,7 +119,7 @@ void countdown() {
     status = START;
     blinkLed(0, 100, 100);
     display.showNumberDecEx(0x00, 0b01000000, true); 
-  
+  }
 }
 
 

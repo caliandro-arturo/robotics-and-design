@@ -150,7 +150,7 @@ void loop(){
       
       if(isMinuteSet==0 && isHourSet==0){
         reset_encoder();
-        Serial.println("Timer");
+        Serial.println("Minutes set");
         isMinuteSet = true;
         setMinute = minute;
         display.showNumberDecEx(setMinute, 0b01000000, true);
@@ -163,7 +163,7 @@ void loop(){
       break;
     case SET_HOURS:
       if(isMinuteSet==1 && isHourSet==0){
-        Serial.println("Minutes set");
+        Serial.println("Hours set");
         isHourSet = true;
         setHour = hour;
         display.showNumberDecEx(100*setHour + setMinute, 0b01000000, true);
@@ -176,17 +176,17 @@ void loop(){
     case PHONE_CHECK:
       mood = NORMAL;
       if(isMinuteSet==1 && isHourSet==1){
-        Serial.println("Hours set");
+        Serial.println("Timer starts!");
         isMinuteSet = 0;
         isHourSet = 0;
         setLedGreen(0);
         blinkLed(0, 100, 100);
       } 
-      check_phone();
-      if(phonePresent == true){
+      //check_phone();
+      //if(phonePresent == true){
         Serial.println("ok");
         status = TIMER_GOING;
-      }
+      //}
       break;
     case TIMER_GOING:
       //Serial.println(status);
