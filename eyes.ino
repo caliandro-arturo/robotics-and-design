@@ -45,7 +45,7 @@ void front_eyes(uint8_t EYE[]) {
 }
 
 
-void assignEye(uint8_t EYE[8]){
+void assign_eye(uint8_t EYE[8]){
   for(int i = 0; i<8; i++){
     currentEye[i] = EYE[i];
   }
@@ -59,33 +59,10 @@ void blink_happy(){
 }
 
 
-void proximityInterrupt() {
-  unsigned long timeNow = millis();
-  int proximity = digitalRead(PROXIMITY_IR);
-  if (proximity == LOW && status == TIMER_GOING && timeNow - lastTimeEye > DEBOUNCING_PERIOD) {
-      mood = ANGRY;
-      assignEye(ANGRY_EYE);
-      blink.reset();
-      Serial.println("0");
-      Serial.println("1");
-  } else if(proximity == HIGH && status == TIMER_GOING && timeNow - lastTimeEye > DEBOUNCING_PERIOD) {
-      mood = NORMAL;
-      Serial.println("1");
-      assignEye(FRONT_EYE);
-  }
-  lastTimeEye = timeNow;
-}
-
-
 void eye_setup() {
   screen.begin();
   screen.setBrightness(1);
   screen.clear();
-  pinMode(PROXIMITY_IR, INPUT_PULLUP); 
-  mood = NORMAL;
-  assignEye(FRONT_EYE);
-  front_eyes(currentEye);
-  Serial.begin(9600);
 }
 
 

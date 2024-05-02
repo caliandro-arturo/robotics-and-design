@@ -4,7 +4,6 @@
 #include <TM1637Display.h>
 #include <MATRIX7219.h>
 
-#define PROXIMITY_IR 6
 
 #define TIMER_CLK 5   
 #define TIMER_DIO 4  
@@ -130,24 +129,46 @@ COROUTINE(blink) {
   }
 }
 
+void assign_mood(){
+  switch(mood){
+    case HAPPY:
+    assign_eye(HAPPY_EYE);
+    break;
+    case NORMAL:
+    assign_eye(FRONT_EYE);
+    break;
+    case ANGRY:
+    assign_eye(ANGRY_EYE);
+    break;
+    case SAD:
+    assign_eye(SAD_EYE);
+    break;
+    case PISSED:
+    assign_eye(PISSED_EYE);
+    break;
+  }
+
+}
+
 void setup(){
   status = START;
+  mood = NORMAL;
   eye_setup();
   clock_setup();
-  //init_phone_slots();
+  pinMode(PROXIMITY_IR, INPUT_PULLUP); 
+  init_phone_slots();
+  Serial.begin(9600);
 }
 
 void loop(){
   switch(status){
+
     case START: 
-      //Serial.println(status);
-      //init_phone_slots();
-      //check_phone();
       increment_minutes();
       display.showNumberDecEx(minute, 0b01000000, true);
       break;
+
     case SET_MINUTES:
-      
       if(isMinuteSet==0 && isHourSet==0){
         reset_encoder();
         Serial.println("Minutes set");
@@ -161,6 +182,7 @@ void loop(){
       increment_hours();
       display.showNumberDecEx(100*hour + minute, 0b01000000, true);
       break;
+
     case SET_HOURS:
       if(isMinuteSet==1 && isHourSet==0){
         Serial.println("Hours set");
@@ -171,44 +193,31 @@ void loop(){
         isHourSet = true;
         setLedWhite(0);
         blinkLed(0, 100, 100);
+        status = PHONE_CHECK;
       }
       break;
+
     case PHONE_CHECK:
       mood = NORMAL;
-      if(isMinuteSet==1 && isHourSet==1){
+      check_phone();
+      if(phonePresent == true & isMinuteSet==1 && isHourSet==1){
         Serial.println("Timer starts!");
         isMinuteSet = 0;
         isHourSet = 0;
         setLedGreen(0);
         blinkLed(0, 100, 100);
-      } 
-      //check_phone();
-      //if(phonePresent == true){
-        Serial.println("ok");
         status = TIMER_GOING;
-      //}
+      }
       break;
+
     case TIMER_GOING:
-      //Serial.println(status);
-      //setLedRed(0);
-      //blinkLed(0, 100, 100);
-      //if(isMinuteSet==1 && isHourSet==1){
-      //blink.runCoroutine();
       countdown();
-      assignEye(FRONT_EYE);
-      //}
-      
       break;
-    case HAND_DETECTED:
-    //would delete it!!!!!
-      setLedRed(0);
-      blinkLed(0, 100, 100);
-      //blink.runCoroutine();
-      break;
+  
     case TIMER_FINISHED:
       Serial.println("Time finished!");
       setLedGreen(0);
-      assignEye(FRONT_EYE);
+      mood = NORMAL;
       isMinuteSet = false;
       isHourSet = false;
       minute = 0;
@@ -220,6 +229,7 @@ void loop(){
       status = START;
       break;
   }
+  assign_mood();
   blink.runCoroutine();
 
 }
