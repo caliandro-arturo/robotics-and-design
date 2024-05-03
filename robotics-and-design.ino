@@ -1,31 +1,16 @@
+#include "src/arms.hpp"
+#include "src/body.hpp"
+#include "src/ears.hpp"
+#include "src/head.hpp"
+#include "src/pins.hpp"
+#include "src/servoCalibration.hpp"
+#include "src/timer.hpp"
 
 #include <AceRoutine.h>
-#include <TM1637Display.h>
 #include <MATRIX7219.h>
+#include <TM1637Display.h>
 
-#define SLOT0 41
-/*#define SLOT1 1
-#define SLOT2 1
-#define SLOT3 1*/
-
-
-#define TIMER_CLK 5   
-#define TIMER_DIO 4  
-
-#define ENCODER_SW 18
-#define ENCODER_A 19
-#define ENCODER_B 20
 #define DEBOUNCING_PERIOD 100
-
-#define LED0_RED 11
-#define LED0_BLUE 9
-#define LED0_GREEN 10
-
-#define EYE_DIN 40
-#define EYE_CS 44
-#define EYE_CLK 42
-
-#define PROXIMITY_IR 6
 
 unsigned long lastTimeEye = 0UL;
 int setMinute;
@@ -152,8 +137,8 @@ void increment_status(){
 }
 
 void encoderISR() {
-  int MSB = digitalRead(ENCODER_A);
-  int LSB = digitalRead(ENCODER_B);
+  int MSB = digitalRead(ENCODER_CLK);
+  int LSB = digitalRead(ENCODER_DT);
 
   int encoded = (MSB << 1) | LSB;
   int sum = (lastEncoded << 2) | encoded;
@@ -176,11 +161,11 @@ void clock_setup() {
   hour = 0;
   isMinuteSet = false;
   isHourSet = false;
-  pinMode(ENCODER_A, INPUT_PULLUP);         //encoder input setup
-  pinMode(ENCODER_B, INPUT_PULLUP);
+  pinMode(ENCODER_CLK, INPUT_PULLUP);         //encoder input setup
+  pinMode(ENCODER_DT, INPUT_PULLUP);
   pinMode(ENCODER_SW, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ENCODER_SW), increment_status, RISING); 
-  attachInterrupt(digitalPinToInterrupt(ENCODER_A),encoderISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_CLK),encoderISR, CHANGE);
 
 }
 
@@ -205,7 +190,8 @@ void countdown() {
       }
     }
 
-    int proximity = digitalRead(PROXIMITY_IR);
+    //TO BE SPECIFIED IF LEFT OR RIGHT
+    int proximity = digitalRead(LEFTPROX);
     if(proximity ==  LOW){
       mood = ANGRY;
     }else{
@@ -411,7 +397,8 @@ void setup(){
   mood = NORMAL;
   eye_setup();
   clock_setup();
-  pinMode(PROXIMITY_IR, INPUT_PULLUP); 
+  pinMode(LEFTPROX, INPUT_PULLUP); 
+  pinMode(RIGHTPROX, INPUT_PULLUP); 
   init_phone_slots();
   Serial.begin(9600);
 }
