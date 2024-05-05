@@ -1,3 +1,7 @@
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include <stdint.h>
 #include <AceRoutine.h>
 #include <Servo.h>

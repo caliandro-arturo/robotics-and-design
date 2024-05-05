@@ -1,6 +1,7 @@
-#include <Arduino.h>
-#include <AceRoutine.h>
-#include <Servo.h>
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include "arms.hpp"
 #include "pins.hpp"
 #include "servoCalibration.hpp"

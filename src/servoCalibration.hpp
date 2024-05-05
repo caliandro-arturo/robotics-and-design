@@ -1,4 +1,8 @@
 /**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
+/**
  * This header contains the calibration values (in microseconds) of the
  * servo components.
  * *_MIN and *_MAX indicate respectively the minimum and maximum position
