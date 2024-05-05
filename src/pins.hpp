@@ -19,12 +19,12 @@
 #define SLOT3 24
 
 
-#define TIMER_CLK 19 
-#define TIMER_DIO 20  
+#define TIMER_CLK 19
+#define TIMER_DIO 20
 
 
 #define LEFTPROX 2
-#define RIGHTPROX 22 
+#define RIGHTPROX 22
 
 #define ENCODER_CLK 12
 #define ENCODER_DT 11
