@@ -3,6 +3,7 @@
 #include "src/ears.hpp"
 #include "src/head.hpp"
 #include "src/pins.hpp"
+#include "src/powerManager.hpp"
 #include "src/servoCalibration.hpp"
 #include "src/timer.hpp"
 
@@ -11,6 +12,8 @@
 #include <TM1637Display.h>
 
 #define DEBOUNCING_PERIOD 100
+
+using namespace ace_routine;
 
 unsigned long lastTimeEye = 0UL;
 int setMinute;
@@ -23,8 +26,7 @@ int hour;
 volatile int encoderPos = 0;
 int oldProximity;
 bool phonePresent;
-
-using namespace ace_routine;
+extern power power_status;
 
 uint8_t currentEye[8];
 
@@ -389,6 +391,14 @@ void assign_mood() {
     }
 }
 
+/*
+    IDLE MANAGEMENT
+*/
+
+/** Sets the robot to the idle position */
+void go_idle() {
+    // TODO
+}
 
 /*
 *
@@ -401,6 +411,7 @@ void assign_mood() {
 void setup() {
     status = START;
     mood = NORMAL;
+    init_power();
     eye_setup();
     clock_setup();
     pinMode(LEFTPROX, INPUT_PULLUP);
@@ -471,5 +482,9 @@ void loop() {
             break;
     }
     assign_mood();
+    if (power_status == OFF) {
+        go_idle();
+        shutdown();
+    }
     blink.runCoroutine();
 }

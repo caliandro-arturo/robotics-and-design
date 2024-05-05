@@ -35,4 +35,7 @@
 #define EYE_CS 15
 #define EYE_CLK 14
 
+#define POWER_BTN 21
+#define RELAY_CTRL 9
+
 #endif
