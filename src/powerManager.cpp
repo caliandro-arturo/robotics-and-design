@@ -4,9 +4,14 @@
 
 #include "pins.hpp"
 #include "powerManager.hpp"
+#include <MATRIX7219.h>
 #include <LowPower.h>
+#include <TM1637Display.h>
 
 volatile power power_status = OFF;
+
+extern MATRIX7219 screen;
+extern TM1637Display display;
 
 void init_power() {
     attachInterrupt(digitalPinToInterrupt(POWER_BTN), power_check, CHANGE);
@@ -24,11 +29,16 @@ void power_check() {
 // first disabled == last re-enabled.
 void shutdown() {
     // Turn off
-    // TODO disable every interrupt EXCEPT the power button one
+    screen.displayOff();
+    display.clear();
+    PCICR &= ~bit(digitalPinToPCICRbit(ENCODER_CLK));
     digitalWrite(RELAY_CTRL, HIGH);
+    interrupts();
     LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);  // Execution frozen here
     // Turn on
+    noInterrupts();
     digitalWrite(RELAY_CTRL, LOW);
-    // TODO re-enable the disabled interrupts
+    PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
+    screen.displayOn();
     power_status = ON;
 }
