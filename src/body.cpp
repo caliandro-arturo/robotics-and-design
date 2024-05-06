@@ -26,6 +26,12 @@ void Body::setPosition(int8_t pos) {
     destination = posUs;
 }
 
+void Body::setPositionImmediate(int8_t pos) {
+    destination = start;
+    position = angleToUs(pos);
+    body.writeMicroseconds(position);
+}
+
 int Body::runCoroutine() {
     COROUTINE_LOOP() {
         COROUTINE_AWAIT(position != destination);

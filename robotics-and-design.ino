@@ -428,7 +428,7 @@ void go_idle() {
     arms->stop();
     arms->setPosition(LEFTARM, 0);
     arms->setPosition(RIGHTARM, 0);
-    body->setPosition(0);
+    body->setPositionImmediate(0);
     ears->move(LEFTEAR, 0);
     ears->move(RIGHTEAR, 0);
     head->setPosition(0);
@@ -520,7 +520,9 @@ void loop() {
     assign_mood();
     if (power_status == OFF) {
         go_idle();
+        noInterrupts();
         shutdown();
+        interrupts();
     }
     blink.runCoroutine();
 }

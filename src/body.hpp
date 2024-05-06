@@ -28,6 +28,12 @@ class Body : public Coroutine {
         */
         void setPosition(int8_t pos);
 
+        /** Sets the body to the specified position, without waiting.
+         *
+         * @param pos   the desired orientation of the body
+        */
+        void setPositionImmediate(int8_t pos);
+
         int runCoroutine() override;
 
         /** Returns the movement state of the body. */
