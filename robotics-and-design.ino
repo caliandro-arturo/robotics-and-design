@@ -163,6 +163,16 @@ void encoderISR() {
     lastEncoded = encoded;
 }
 
+ISR(PCINT0_vect) {
+    if (digitalRead(ENCODER_SW) == LOW && lastButtonState == LOW) {
+        // Encoder pushbutton interrupt
+        increment_status();
+        return;
+    }
+    // Encoder rotate interrupt
+    encoderISR();
+}
+
 
 void clock_setup() {
     counter = 0;
@@ -173,10 +183,12 @@ void clock_setup() {
     isMinuteSet = false;
     isHourSet = false;
     pinMode(ENCODER_CLK, INPUT_PULLUP);  //encoder input setup
-    pinMode(ENCODER_DT, INPUT_PULLUP);
-    pinMode(ENCODER_SW, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_SW), increment_status, RISING);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_CLK), encoderISR, CHANGE);
+    pinMode(ENCODER_DT, INPUT);
+    pinMode(ENCODER_SW, INPUT);
+    PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
+    *digitalPinToPCMSK(ENCODER_CLK) |= bit(digitalPinToPCMSKbit(ENCODER_CLK))
+                                       | bit(digitalPinToPCMSKbit(ENCODER_DT))
+                                       | bit(digitalPinToPCMSKbit(ENCODER_SW));
 }
 
 
