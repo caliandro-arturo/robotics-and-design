@@ -8,6 +8,7 @@
 #include "src/timer.hpp"
 
 #include <AceRoutine.h>
+#include <DFRobotDFPlayerMini.h>
 #include <MATRIX7219.h>
 #include <TM1637Display.h>
 
@@ -97,6 +98,40 @@ void check_phone() {
     //  phonePresent = true;
 }
 
+/*
+*
+*
+* MP3
+*
+*/
+DFRobotDFPlayerMini mp3;
+int current_meow = 2;
+
+void init_mp3() {
+    if (!mp3.begin(Serial3)) {
+        Serial.println("error");
+        while (true);
+    }
+    mp3.volume(10);
+}
+
+COROUTINE(single_meow) {
+    COROUTINE_BEGIN()
+    mp3.play(current_meow);
+    COROUTINE_DELAY(1500);
+    COROUTINE_END();
+}
+
+
+COROUTINE(play) {
+    COROUTINE_LOOP() {
+        mp3.play(current_meow);
+        COROUTINE_DELAY(1500);
+        mp3.play(current_meow);
+        COROUTINE_DELAY(1500);
+    }
+}
+
 
 
 /*
@@ -142,12 +177,10 @@ void increment_minutes() {
 
 
 void increment_status() {
-
     if (status == START)
         status = SET_MINUTES;
     else if (status == SET_MINUTES) {
         status = SET_HOURS;
-        //setMinute = minute;
     }
 }
 
@@ -459,6 +492,8 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     Serial.begin(115200);
+    Serial3.begin(9600);
+    init_mp3();
 }
 
 void loop() {
@@ -477,6 +512,7 @@ void loop() {
                 setMinute = minute;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 blink_happy();
+                single_meow.runCoroutine();
             }
             increment_hours();
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
@@ -489,6 +525,7 @@ void loop() {
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 blink_happy();
+                single_meow.runCoroutine();
                 isHourSet = true;
                 status = PHONE_CHECK;
             }
