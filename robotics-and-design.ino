@@ -195,19 +195,19 @@ void clock_setup() {
 void countdown() {
     currentMillis = millis();
 
-    if (hour > 0 || minute > 0) {
-        display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    if (setHour > 0 || setMinute > 0) {
+        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
         if (currentMillis - previousMillis >= 60000) {
             previousMillis = currentMillis;
             Serial.println("we");
-            if (minute > 0) {
-                minute--;
-                display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+            if (setMinute > 0) {
+                setMinute--;
+                display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             } else {
-                if (hour > 0) {
-                    hour--;
-                    minute = 59;
-                    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+                if (setHour > 0) {
+                    setHour--;
+                    setMinute = 59;
+                    display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 }
             }
         }
@@ -223,7 +223,6 @@ void countdown() {
         currentMillis = millis();
 
     } else {
-        previousMillis = 0;
         status = TIMER_FINISHED;
     }
 }
@@ -474,7 +473,7 @@ void loop() {
                 blink_happy();
             }
             increment_hours();
-            display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+            display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             break;
 
         case SET_HOURS:
@@ -497,6 +496,7 @@ void loop() {
                 isMinuteSet = 0;
                 isHourSet = 0;
                 status = TIMER_GOING;
+                previousMillis = millis();
             }
             break;
 
@@ -526,3 +526,5 @@ void loop() {
     }
     blink.runCoroutine();
 }
+
+//missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
