@@ -19,8 +19,8 @@
 #define SLOT3 24
 
 
-#define TIMER_CLK 19
-#define TIMER_DIO 20
+#define TIMER_CLK 16
+#define TIMER_DIO 17
 
 
 #define LEFTPROX 2
@@ -30,12 +30,14 @@
 #define ENCODER_DT 11
 #define ENCODER_SW 10
 
+#define MP3READER_TX 14
+#define MP3READER_RX 15
 
-#define EYE_DIN 16
-#define EYE_CS 15
-#define EYE_CLK 14
+#define EYE_DIN 21
+#define EYE_CS 20
+#define EYE_CLK 19
 
-#define POWER_BTN 21
+#define POWER_BTN 18
 #define RELAY_CTRL 9
 
 #endif
