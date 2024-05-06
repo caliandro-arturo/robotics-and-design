@@ -62,7 +62,6 @@ volatile Status status;
 typedef struct {
         int pin;
         bool phoneIn;
-        //RGB_Led rgbled;
 } PhoneSlot;
 
 PhoneSlot phoneSlot[1];
@@ -126,24 +125,29 @@ void reset_encoder() {
 }
 
 void increment_hours() {
-    hour = (encoderPos % 30) / 10;
+    if (encoderPos >= 0) {
+        hour = (encoderPos % 30) / 10;
+    } else {
+        encoderPos = 29;
+    }
 }
 
 void increment_minutes() {
-    minute = (encoderPos % 300) / 5;
+    if (encoderPos >= 0) {
+        minute = (encoderPos % 300) / 5;
+    } else {
+        encoderPos = 299;
+    }
 }
 
 
 void increment_status() {
-    unsigned long timeNow = millis();
-    if (timeNow - lastTime > DEBOUNCING_PERIOD) {
-        if (status == START)
-            status = SET_MINUTES;
-        else if (status == SET_MINUTES) {
-            status = SET_HOURS;
-            //setMinute = minute;
-        }
-        lastTime = timeNow;
+
+    if (status == START)
+        status = SET_MINUTES;
+    else if (status == SET_MINUTES) {
+        status = SET_HOURS;
+        //setMinute = minute;
     }
 }
 
@@ -164,7 +168,9 @@ void encoderISR() {
 }
 
 ISR(PCINT0_vect) {
-    if (digitalRead(ENCODER_SW) == LOW && lastButtonState == LOW) {
+    int buttonState = digitalRead(ENCODER_SW);
+    Serial.println(buttonState);
+    if (buttonState == LOW) {
         // Encoder pushbutton interrupt
         increment_status();
         return;
@@ -182,9 +188,9 @@ void clock_setup() {
     hour = 0;
     isMinuteSet = false;
     isHourSet = false;
-    pinMode(ENCODER_CLK, INPUT_PULLUP);  //encoder input setup
-    pinMode(ENCODER_DT, INPUT);
-    pinMode(ENCODER_SW, INPUT);
+    pinMode(ENCODER_CLK, INPUT);  //encoder input setup
+    pinMode(ENCODER_DT, INPUT_PULLUP);
+    pinMode(ENCODER_SW, INPUT_PULLUP);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
     *digitalPinToPCMSK(ENCODER_CLK) |= bit(digitalPinToPCMSKbit(ENCODER_CLK))
                                        | bit(digitalPinToPCMSKbit(ENCODER_DT))
@@ -452,7 +458,7 @@ void setup() {
     pinMode(RIGHTPROX, INPUT_PULLUP);
     init_phone_slots();
     init_body_parts();
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 void loop() {
