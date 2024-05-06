@@ -404,12 +404,35 @@ void assign_mood() {
 }
 
 /*
+    BODY PARTS
+*/
+Arms *arms;
+Body *body;
+Ears *ears;
+Head *head;
+
+void init_body_parts() {
+    arms = new Arms(LEFTARM, RIGHTARM, ARMS_MIN, ARMS_MAX);
+    body = new Body(BODYPIN, BODY_MIN, BODY_MAX);
+    ears = new Ears(LEFTEAR, RIGHTEAR, EARS_MIN, EARS_MAX);
+    head = new Head(HEADPIN, PETSENSOR, HEAD_MIN, HEAD_MAX);
+    delay(3000);
+}
+
+/*
     IDLE MANAGEMENT
 */
 
 /** Sets the robot to the idle position */
 void go_idle() {
-    // TODO
+    arms->stop();
+    arms->setPosition(LEFTARM, 0);
+    arms->setPosition(RIGHTARM, 0);
+    body->setPosition(0);
+    ears->move(LEFTEAR, 0);
+    ears->move(RIGHTEAR, 0);
+    head->setPosition(0);
+    delay(3000);
 }
 
 /*
@@ -429,6 +452,7 @@ void setup() {
     pinMode(LEFTPROX, INPUT_PULLUP);
     pinMode(RIGHTPROX, INPUT_PULLUP);
     init_phone_slots();
+    init_body_parts();
     Serial.begin(9600);
 }
 

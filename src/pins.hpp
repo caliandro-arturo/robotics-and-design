@@ -11,7 +11,7 @@
 #define HEADPIN 6
 #define BODYPIN 30
 
-#define PETSENSOR
+#define PETSENSOR 50  // Just a placeholder
 
 #define SLOT0 4
 #define SLOT1 26
