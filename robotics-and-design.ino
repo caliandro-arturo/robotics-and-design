@@ -112,26 +112,8 @@ void init_mp3() {
         Serial.println("error");
         while (true);
     }
-    mp3.volume(10);
+    mp3.volume(20);
 }
-
-COROUTINE(single_meow) {
-    COROUTINE_BEGIN()
-    mp3.play(current_meow);
-    COROUTINE_DELAY(1500);
-    COROUTINE_END();
-}
-
-
-COROUTINE(play) {
-    COROUTINE_LOOP() {
-        mp3.play(current_meow);
-        COROUTINE_DELAY(1500);
-        mp3.play(current_meow);
-        COROUTINE_DELAY(1500);
-    }
-}
-
 
 
 /*
@@ -512,7 +494,7 @@ void loop() {
                 setMinute = minute;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 blink_happy();
-                single_meow.runCoroutine();
+                mp3.play(2);
             }
             increment_hours();
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
@@ -525,7 +507,7 @@ void loop() {
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 blink_happy();
-                single_meow.runCoroutine();
+                mp3.play(2);
                 isHourSet = true;
                 status = PHONE_CHECK;
             }
