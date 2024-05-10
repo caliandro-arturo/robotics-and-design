@@ -60,42 +60,19 @@ volatile Status status;
 */
 
 
-typedef struct {
-        int pin;
-        bool phoneIn;
-} PhoneSlot;
-
-PhoneSlot phoneSlot[1];
-
-
 void init_phone_slots() {
-    phoneSlot[0].pin = SLOT0;
-    /*phoneSlot[1].pin = SLOT1;
-  phoneSlot[2].pin = SLOT2;
-  phoneSlot[3].pin = SLOT3;*/
-    /* phonePresent = false;
-  for(int i=0; i<1; i++){
-    phoneSlot[i].phoneIn = false;
-  }
-  init_leds();*/
+    pinMode(SLOT0, INPUT_PULLUP);
+    pinMode(SLOT1, INPUT_PULLUP);
+    pinMode(SLOT2, INPUT_PULLUP);
+    pinMode(SLOT3, INPUT_PULLUP);
 }
 
 //may be the opposite
 void check_phone() {
-    int count = 0;
-    //for(int i= 0; i<1; i++){
-    if (digitalRead(phoneSlot[0].pin) == LOW) {  //detected
+    if (digitalRead(SLOT0) == LOW || digitalRead(SLOT1) == LOW || digitalRead(SLOT2) == LOW || digitalRead(SLOT3) == LOW)  //detected
         phonePresent = true;
-        phoneSlot[0].phoneIn = true;
-        count++;
-
-    } else {
+    else
         phonePresent = false;
-        phoneSlot[0].phoneIn = false;
-    }
-    // }
-    // if (count>0)
-    //  phonePresent = true;
 }
 
 /*
@@ -126,7 +103,7 @@ void init_mp3() {
 
 TM1637Display display(TIMER_CLK, TIMER_DIO);
 
-
+int num_blinks;
 volatile int counter;
 int lastEnA = LOW;
 unsigned long lastTime = 0UL;
@@ -136,6 +113,31 @@ unsigned long interval = 1000;
 
 volatile int lastEncoded = 0;
 unsigned long currentMillis;
+
+
+
+COROUTINE(blink_timer) {
+    COROUTINE_BEGIN();
+    if (num_blinks < 10) {
+        display.clear();
+        COROUTINE_DELAY(100);
+        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
+        COROUTINE_DELAY(100);
+        num_blinks++;
+    } else {
+        COROUTINE_END();
+    }
+}
+
+
+COROUTINE(blink_dots) {
+    COROUTINE_LOOP() {
+        display.showNumberDec(100 * setHour + setMinute, true);
+        COROUTINE_DELAY(500);
+        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
+        COROUTINE_DELAY(500);
+    }
+}
 
 void reset_encoder() {
     encoderPos = 0;
@@ -184,7 +186,6 @@ void encoderISR() {
 
 ISR(PCINT0_vect) {
     int buttonState = digitalRead(ENCODER_SW);
-    Serial.println(buttonState);
     if (buttonState == LOW) {
         // Encoder pushbutton interrupt
         increment_status();
@@ -217,18 +218,15 @@ void countdown() {
     currentMillis = millis();
 
     if (setHour > 0 || setMinute > 0) {
-        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
         if (currentMillis - previousMillis >= 60000) {
             previousMillis = currentMillis;
             Serial.println("we");
             if (setMinute > 0) {
                 setMinute--;
-                display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             } else {
                 if (setHour > 0) {
                     setHour--;
                     setMinute = 59;
-                    display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 }
             }
         }
@@ -240,9 +238,8 @@ void countdown() {
         } else {
             mood = NORMAL;
         }
-
         currentMillis = millis();
-
+        blink_dots.runCoroutine();
     } else {
         status = TIMER_FINISHED;
     }
@@ -478,11 +475,17 @@ void setup() {
     init_mp3();
 }
 
+void reset_phone_check() {
+    phonePresent = false;
+}
+
+
 void loop() {
     switch (status) {
 
         case START:
             increment_minutes();
+            reset_phone_check();
             display.showNumberDecEx(minute, 0b01000000, true);
             break;
 
