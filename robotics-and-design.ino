@@ -63,15 +63,15 @@ volatile Status status;
 
 
 void init_phone_slots() {
-    pinMode(SLOT0, INPUT_PULLUP);
-    pinMode(SLOT1, INPUT_PULLUP);
-    pinMode(SLOT2, INPUT_PULLUP);
-    pinMode(SLOT3, INPUT_PULLUP);
+    pinMode(SLOT0, INPUT);
+    pinMode(SLOT1, INPUT);
+    pinMode(SLOT2, INPUT);
+    pinMode(SLOT3, INPUT);
 }
 
 //may be the opposite
 void check_phone() {
-    if (digitalRead(SLOT0) == LOW || digitalRead(SLOT1) == LOW || digitalRead(SLOT2) == LOW || digitalRead(SLOT3) == LOW)  //detected
+    if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH)  //detected
         phonePresent = true;
     else
         phonePresent = false;
@@ -427,9 +427,6 @@ void eye_setup() {
 
 void assign_mood() {
     switch (mood) {
-        case HAPPY:
-            assign_eye(HAPPY_EYE);
-            break;
         case NORMAL:
             assign_eye(FRONT_EYE);
             break;
@@ -513,7 +510,7 @@ void loop() {
     switch (status) {
         case IDLE:
             mood = PISSED;
-            reset_phone_check();
+            check_phone();
             if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
                 increment_minutes();
@@ -539,7 +536,6 @@ void loop() {
             } else if (isMinuteSet && isHourSet) {
                 status = PHONE_CHECK;
             }
-
             break;
 
         case SET_MINUTES:
@@ -548,10 +544,8 @@ void loop() {
                 Serial.println("Minutes set");
                 isMinuteSet = true;
                 setMinute = minute;
-                num_blinks = 0;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 status = HAPPY_STATE;
-                mp3.play(2);
             }
             increment_hours();
             display.setBrightness(7, true);
@@ -563,8 +557,6 @@ void loop() {
                 Serial.println("Hours set");
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
-                blink_happy();
-                mp3.play(2);
                 isHourSet = true;
                 status = HAPPY_STATE;
             }
