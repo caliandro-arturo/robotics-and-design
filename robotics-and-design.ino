@@ -532,11 +532,11 @@ void loop() {
         case HAPPY_STATE:
             blink_timer();
             blink_happy();
-            if (status == TIMER_FINISHED){
+            if (status == TIMER_FINISHED) {
                 status = IDLE;
-            }else if  (isMinuteSet && !isHourSet) {
+            } else if (isMinuteSet && !isHourSet) {
                 status = SET_MINUTES;
-            }else if (isMinuteSet && isHourSet) {
+            } else if (isMinuteSet && isHourSet) {
                 status = PHONE_CHECK;
             }
 
@@ -554,7 +554,7 @@ void loop() {
                 mp3.play(2);
             }
             increment_hours();
-            display.setBrightness(7,true);
+            display.setBrightness(7, true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             break;
 
@@ -572,7 +572,7 @@ void loop() {
 
         case PHONE_CHECK:
             mood = NORMAL;
-            display.setBrightness(7,true);
+            display.setBrightness(7, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
             if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
