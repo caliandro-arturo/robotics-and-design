@@ -39,7 +39,9 @@ enum Mood { NORMAL,
 
 volatile Mood mood;
 
-enum Status { START,
+enum Status { IDLE,
+              START,
+              HAPPY_STATE,
               SET_MINUTES,
               SET_HOURS,
               PHONE_CHECK,
@@ -109,12 +111,23 @@ int lastEnA = LOW;
 unsigned long lastTime = 0UL;
 
 unsigned long previousMillis = 0;
+unsigned long previousTriggerMillis = 0;
 unsigned long interval = 1000;
 
 volatile int lastEncoded = 0;
 unsigned long currentMillis;
 
 
+void blink_timer() {
+    for (int i = 0; i < 3; i++) {
+        display.clear();
+        display.setBrightness(0, false);
+        delay(70);
+        display.setBrightness(7, true);
+        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
+        delay(70);
+    }
+}
 
 COROUTINE(blink_timer) {
     COROUTINE_BEGIN();
@@ -198,12 +211,13 @@ ISR(PCINT0_vect) {
 
 void clock_setup() {
     counter = 0;
-    display.setBrightness(7);
+    display.setBrightness(7, true);
     display.clear();
     minute = 0;
     hour = 0;
     isMinuteSet = false;
     isHourSet = false;
+    display.showNumberDecEx(minute, 0b01000000, true);
     pinMode(ENCODER_CLK, INPUT);  //encoder input setup
     pinMode(ENCODER_DT, INPUT_PULLUP);
     pinMode(ENCODER_SW, INPUT_PULLUP);
@@ -212,6 +226,17 @@ void clock_setup() {
                                        | bit(digitalPinToPCMSKbit(ENCODER_DT))
                                        | bit(digitalPinToPCMSKbit(ENCODER_SW));
 }
+
+
+void trigger_user() {
+    currentMillis = millis();
+    if (currentMillis - previousTriggerMillis >= 15000 && !isMinuteSet) {
+        Serial.println("we");
+        previousTriggerMillis = currentMillis;
+    }
+}
+
+
 
 
 void countdown() {
@@ -388,7 +413,7 @@ void blink_happy() {
     close_eyes();
     delay(50);
     front_eyes(HAPPY_EYE);
-    delay(1000);
+    delay(950);
 }
 
 
@@ -465,7 +490,11 @@ void setup() {
     mood = NORMAL;
     init_power();
     eye_setup();
+    status = IDLE;
+    mood = PISSED;
+    assign_mood();
     clock_setup();
+    encoderPos = 0;
     pinMode(LEFTPROX, INPUT_PULLUP);
     pinMode(RIGHTPROX, INPUT_PULLUP);
     init_phone_slots();
@@ -482,11 +511,35 @@ void reset_phone_check() {
 
 void loop() {
     switch (status) {
-
-        case START:
-            increment_minutes();
+        case IDLE:
+            mood = PISSED;
             reset_phone_check();
+            if (encoderPos != 0 || phonePresent == true) {
+                display.setBrightness(7, true);
+                increment_minutes();
+                display.showNumberDecEx(minute, 0b01000000, true);
+                previousTriggerMillis = millis();
+                status = START;
+            }
+            break;
+        case START:
+            mood = NORMAL;
+            increment_minutes();
             display.showNumberDecEx(minute, 0b01000000, true);
+            trigger_user();
+            break;
+
+        case HAPPY_STATE:
+            blink_timer();
+            blink_happy();
+            if (status == TIMER_FINISHED){
+                status = IDLE;
+            }else if  (isMinuteSet && !isHourSet) {
+                status = SET_MINUTES;
+            }else if (isMinuteSet && isHourSet) {
+                status = PHONE_CHECK;
+            }
+
             break;
 
         case SET_MINUTES:
@@ -495,29 +548,32 @@ void loop() {
                 Serial.println("Minutes set");
                 isMinuteSet = true;
                 setMinute = minute;
+                num_blinks = 0;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
-                blink_happy();
+                status = HAPPY_STATE;
                 mp3.play(2);
             }
             increment_hours();
+            display.setBrightness(7,true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             break;
 
         case SET_HOURS:
             if (isMinuteSet == 1 && isHourSet == 0) {
                 Serial.println("Hours set");
-                isHourSet = true;
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 blink_happy();
                 mp3.play(2);
                 isHourSet = true;
-                status = PHONE_CHECK;
+                status = HAPPY_STATE;
             }
             break;
 
         case PHONE_CHECK:
             mood = NORMAL;
+            display.setBrightness(7,true);
+            display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
             if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
                 Serial.println("Timer starts!");
@@ -534,7 +590,7 @@ void loop() {
 
         case TIMER_FINISHED:
             Serial.println("Time finished!");
-            mood = NORMAL;
+            num_blinks = 0;
             isMinuteSet = false;
             isHourSet = false;
             minute = 0;
@@ -542,7 +598,7 @@ void loop() {
             setMinute = 0;
             reset_encoder();
             display.showNumberDecEx(0x00, 0b01000000, true);
-            status = START;
+            status = HAPPY_STATE;
             break;
     }
     assign_mood();
