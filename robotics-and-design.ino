@@ -71,7 +71,7 @@ void init_phone_slots() {
 
 //may be the opposite
 void check_phone() {
-     if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH)   //detected
+    if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH)  //detected
         phonePresent = true;
     else
         phonePresent = false;
@@ -445,9 +445,6 @@ void eye_setup() {
 
 void assign_mood() {
     switch (mood) {
-        case HAPPY:
-            assign_eye(HAPPY_EYE);
-            break;
         case NORMAL:
             assign_eye(FRONT_EYE);
             break;
@@ -532,7 +529,7 @@ void loop() {
     switch (status) {
         case IDLE:
             mood = PISSED;
-            reset_phone_check();
+            check_phone();
             if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
                 increment_minutes();
@@ -551,14 +548,13 @@ void loop() {
         case HAPPY_STATE:
             blink_timer();
             blink_happy();
-            if (status == TIMER_FINISHED){
+            if (status == TIMER_FINISHED) {
                 status = IDLE;
-            }else if  (isMinuteSet && !isHourSet) {
+            } else if (isMinuteSet && !isHourSet) {
                 status = SET_MINUTES;
-            }else if (isMinuteSet && isHourSet) {
+            } else if (isMinuteSet && isHourSet) {
                 status = PHONE_CHECK;
             }
-
             break;
 
         case SET_MINUTES:
@@ -567,13 +563,11 @@ void loop() {
                 Serial.println("Minutes set");
                 isMinuteSet = true;
                 setMinute = minute;
-                num_blinks = 0;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 status = HAPPY_STATE;
-                //mp3.play(2);
             }
             increment_hours();
-            display.setBrightness(7,true);
+            display.setBrightness(7, true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             break;
 
@@ -582,7 +576,6 @@ void loop() {
                 Serial.println("Hours set");
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
-                //mp3.play(2);
                 isHourSet = true;
                 status = HAPPY_STATE;
             }
@@ -590,7 +583,7 @@ void loop() {
 
         case PHONE_CHECK:
             mood = NORMAL;
-            display.setBrightness(7,true);
+            display.setBrightness(7, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
             if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
