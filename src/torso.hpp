@@ -8,38 +8,38 @@
 
 using namespace ace_routine;
 
-/** Representation of the body, intended as the torso. */
-class Body : public Coroutine {
+/** Representation of the torso. */
+class Torso : public Coroutine {
     public:
-        /** Instantiates the body servo motor.
+        /** Instantiates the torso servo motor.
          *
-         * @param bodyPin           the body control pin
+         * @param bodyPin           the torso control pin
          * @param minMicroseconds   the time representing 0° (in microseconds)
          * @param maxMicroseconds   the time representing 180° (in microseconds)
         */
-        Body(uint8_t bodyPin,
-             uint16_t minMicroseconds,
-             uint16_t maxMicroseconds);
+        Torso(uint8_t bodyPin,
+              uint16_t minMicroseconds,
+              uint16_t maxMicroseconds);
 
-        /** Moves the body setting its position.
+        /** Moves the torso setting its position.
          * The provided angle should be in the range [-90, 90].
          *
-         * @param pos   the desired orientation of the body
+         * @param pos   the desired orientation of the torso
         */
         void setPosition(int8_t pos);
 
-        /** Sets the body to the specified position, without waiting.
+        /** Sets the torso to the specified position, without waiting.
          *
-         * @param pos   the desired orientation of the body
+         * @param pos   the desired orientation of the torso
         */
         void setPositionImmediate(int8_t pos);
 
         int runCoroutine() override;
 
-        /** Returns the movement state of the body. */
+        /** Returns the movement state of the torso. */
         bool isMoving();
 
-        ~Body();
+        ~Torso();
 
     private:
         uint16_t speed();
@@ -47,5 +47,5 @@ class Body : public Coroutine {
         uint16_t position, start, destination;
         uint16_t minMicroseconds, maxMicroseconds;
         uint16_t minDelay, maxDelay;
-        Servo body;
+        Servo torso;
 };

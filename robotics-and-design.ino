@@ -1,5 +1,5 @@
 #include "src/arms.hpp"
-#include "src/body.hpp"
+#include "src/torso.hpp"
 #include "src/ears.hpp"
 #include "src/head.hpp"
 #include "src/pins.hpp"
@@ -464,13 +464,13 @@ void assign_mood() {
     BODY PARTS
 */
 Arms *arms;
-Body *body;
+Torso *torso;
 Ears *ears;
 Head *head;
 
 void init_body_parts() {
     arms = new Arms(LEFTARM, RIGHTARM, ARMS_MIN, ARMS_MAX);
-    body = new Body(BODYPIN, BODY_MIN, BODY_MAX);
+    torso = new Torso(BODYPIN, BODY_MIN, BODY_MAX);
     ears = new Ears(LEFTEAR, RIGHTEAR, EARS_MIN, EARS_MAX);
     head = new Head(HEADPIN, PETSENSOR, HEAD_MIN, HEAD_MAX);
     delay(3000);
@@ -485,7 +485,7 @@ void go_idle() {
     arms->stop();
     arms->setPosition(LEFTARM, 0);
     arms->setPosition(RIGHTARM, 0);
-    body->setPositionImmediate(0);
+    torso->setPositionImmediate(0);
     ears->move(LEFTEAR, 0);
     ears->move(RIGHTEAR, 0);
     head->setPosition(0);
