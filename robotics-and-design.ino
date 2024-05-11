@@ -594,6 +594,7 @@ void loop() {
             Serial.println("Time finished!");
             num_blinks = 0;
             minute = 0;
+            hour = 0;
             setHour = 0;
             setMinute = 0;
             reset_encoder();
