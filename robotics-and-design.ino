@@ -12,8 +12,6 @@
 #include <MATRIX7219.h>
 #include <TM1637Display.h>
 
-#define DEBOUNCING_PERIOD 100
-
 using namespace ace_routine;
 
 unsigned long lastTimeEye = 0UL;
@@ -35,7 +33,9 @@ enum Mood { NORMAL,
             HAPPY,
             SAD,
             ANGRY,
-            PISSED };
+            PISSED,
+            STUDY,
+            DISAPPOINTED };
 
 volatile Mood mood;
 
@@ -46,12 +46,39 @@ enum Status { IDLE,
               SET_HOURS,
               PHONE_CHECK,
               TIMER_GOING,
-              HAND_DETECTED,
+              RELEASE_PHONE,
               TIMER_FINISHED };
 
 volatile Status status;
 
+unsigned long happy_start_time;
+// TODO define this
+unsigned long happy_duration = 3000;
 
+uint8_t lastHandPresence = 0;
+unsigned long angry_start_time;
+unsigned long angry_last_hand_detection_time;
+/** Amount of time after which the robot surrends and let the user take the phone
+ * TODO define this.
+*/
+unsigned long angry_threshold = 5000;
+/** Amount of time between a hand detection and the moment in which the robot will
+ * go back to the study mood.
+ * TODO define this
+*/
+unsigned long angry_cooldown = 1000;
+
+unsigned long disappointment_start_time;
+// TODO define this
+unsigned long disappointment_duration = 3000;
+
+/*
+    BODY PARTS
+*/
+Arms *arms;
+Ears *ears;
+Head *head;
+Torso *torso;
 
 /*
 *
@@ -270,14 +297,12 @@ void countdown() {
     }
 }
 
-void check_hand() {
-    //TO BE SPECIFIED IF LEFT OR RIGHT
-    int proximity = digitalRead(LEFTPROX);
-    if (proximity == LOW) {
-        mood = ANGRY;
-    } else {
-        mood = NORMAL;
-    }
+uint8_t check_hand() {
+    if (digitalRead(LEFTPROX) == LOW) {
+        lastHandPresence = LEFTPROX;
+    } else if (digitalRead(RIGHTPROX) == LOW) {
+        lastHandPresence = RIGHTPROX;
+    } else lastHandPresence = 0;
 }
 
 
@@ -440,7 +465,117 @@ void eye_setup() {
     screen.clear();
 }
 
+/*
+    FULL BODY MANAGEMENT
+*/
 
+/** Initializes the body parts. TODO check if the delay is needed. */
+void init_body_parts() {
+    arms = new Arms(LEFTARM, RIGHTARM, ARMS_MIN, ARMS_MAX);
+    torso = new Torso(BODYPIN, BODY_MIN, BODY_MAX);
+    ears = new Ears(LEFTEAR, RIGHTEAR, EARS_MIN, EARS_MAX);
+    head = new Head(HEADPIN, PETSENSOR, HEAD_MIN, HEAD_MAX);
+    delay(1000);
+}
+
+/** Sets the robot to the idle position */
+void go_idle() {
+    arms->stop();
+    head->stop();
+    arms->setPosition(LEFTARM, 0);
+    arms->setPosition(RIGHTARM, 0);
+    torso->setPositionImmediate(0);
+    ears->move(LEFTEAR, 0);
+    ears->move(RIGHTEAR, 0);
+    head->setPosition(0);
+    delay(1000);
+}
+
+/** Sets the robot to the happy mood. Non-blocking. */
+void go_happy() {
+    arms->shake(0, 70);
+    ears->move(LEFTEAR, 60);
+    ears->move(RIGHTEAR, 60);
+    head->shake(-10, 10);
+    torso->setPosition(0);
+}
+
+/** Interrupts the happy movements. */
+void happy_stop() {
+    arms->stop();
+    head->stop();
+}
+
+/** Sets the robot in the study phase, that is the normal state, plus
+ * random licking a paw.
+*/
+void go_study() {
+    go_idle();
+}
+
+/** Initializes the anger of the robot. It is an initial setup, to call
+ * only once.
+*/
+void go_angry() {
+    arms->stop();
+    head->stop();
+    arms->setPosition(LEFTARM, 60);
+    arms->setPosition(RIGHTARM, 60);
+    torso->setPosition(lastHandPresence == LEFTPROX ? 80 : -80);
+    head->setPosition(lastHandPresence == LEFTPROX ? -80 : 80);
+}
+
+/** Sets the robot as disappointed. Like the other functions, it is non-blocking. */
+void go_disappointed() {
+    arms->stop();
+    head->stop();
+    arms->shake(0, 30);
+    head->shake(-20, 20);
+    ears->move(LEFTEAR, 60);
+    ears->move(RIGHTEAR, 60);
+    torso->setPosition(0);
+}
+
+/** Updates the body. */
+void update_body() {
+    arms->runCoroutine();
+    torso->runCoroutine();
+    head->runCoroutine();
+}
+
+/** Moves randomly the head around. */
+COROUTINE(rand_head) {
+    COROUTINE_LOOP() {
+        COROUTINE_DELAY_SECONDS(10);
+        head->setPosition(random(-45, 45));
+    }
+}
+
+/** Makes the cat lick a random paw.
+ * TODO calibrate head-paw reciprocal position
+*/
+COROUTINE(rand_licking_paw) {
+    COROUTINE_LOOP() {
+        COROUTINE_DELAY_SECONDS(20);
+        uint8_t random_arm = random(1) ? LEFTARM : RIGHTARM;
+        uint8_t other_arm = random_arm == LEFTARM ? RIGHTARM : LEFTARM;
+        ears->move(LEFTEAR, 45);
+        ears->move(RIGHTEAR, 45);
+        arms->setPosition(random_arm, 130);
+        arms->setPosition(other_arm, 45);
+        head->setPosition(random_arm == LEFTARM ? 30 : -30);
+        COROUTINE_DELAY_SECONDS(3);
+        ears->move(LEFTEAR, 0);
+        ears->move(RIGHTEAR, 0);
+        arms->setPosition(random_arm, 0);
+        arms->setPosition(other_arm, 0);
+        head->setPosition(0);
+    }
+}
+
+/*
+    MOOD HANDLER
+*/
 
 void assign_mood() {
     switch (mood) {
@@ -458,38 +593,6 @@ void assign_mood() {
             assign_eye(PISSED_EYE);
             break;
     }
-}
-
-/*
-    BODY PARTS
-*/
-Arms *arms;
-Torso *torso;
-Ears *ears;
-Head *head;
-
-void init_body_parts() {
-    arms = new Arms(LEFTARM, RIGHTARM, ARMS_MIN, ARMS_MAX);
-    torso = new Torso(BODYPIN, BODY_MIN, BODY_MAX);
-    ears = new Ears(LEFTEAR, RIGHTEAR, EARS_MIN, EARS_MAX);
-    head = new Head(HEADPIN, PETSENSOR, HEAD_MIN, HEAD_MAX);
-    delay(3000);
-}
-
-/*
-    IDLE MANAGEMENT
-*/
-
-/** Sets the robot to the idle position */
-void go_idle() {
-    arms->stop();
-    arms->setPosition(LEFTARM, 0);
-    arms->setPosition(RIGHTARM, 0);
-    torso->setPositionImmediate(0);
-    ears->move(LEFTEAR, 0);
-    ears->move(RIGHTEAR, 0);
-    head->setPosition(0);
-    delay(3000);
 }
 
 /*
@@ -526,7 +629,13 @@ void reset_phone_check() {
 void loop() {
     switch (status) {
         case IDLE:
-            mood = PISSED;
+            if (mood != PISSED) {
+                // This must be done before everything else, cannot wait
+                // for the end of the switch to set the pose.
+                go_idle();
+                mood = PISSED;
+            }
+            rand_head.runCoroutine();
             check_phone();
             if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
@@ -538,15 +647,28 @@ void loop() {
             break;
 
         case SET_MINUTES:
-            mood = NORMAL;
+            if (mood != NORMAL) {
+                go_idle();
+                mood = NORMAL;
+            }
             increment_minutes();
             display.showNumberDecEx(minute, 0b01000000, true);
             trigger_user();
             break;
 
         case HAPPY_STATE:
+            if (mood != HAPPY) {
+                happy_start_time = millis();
+                go_happy();
+                mood = HAPPY;
+            }
+            // TODO These two must be non-blocking, otherwise the body cannot move.
             blink_timer();
             blink_happy();
+            // Until the interaction is not expired, do not touch the status.
+            if (millis() - happy_start_time <= happy_duration)
+                break;
+            // Select the new state
             if (isMinuteSet && isHourSet) {
                 isMinuteSet = false;
                 isHourSet = false;
@@ -568,13 +690,20 @@ void loop() {
             break;
 
         case SET_HOURS:
+            if (mood != NORMAL) {
+                go_idle();
+                mood = NORMAL;
+            }
             increment_hours();
             display.setBrightness(7, true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             break;
 
         case PHONE_CHECK:
-            mood = NORMAL;
+            if (mood != NORMAL) {
+                go_idle();
+                mood = NORMAL;
+            }
             display.setBrightness(7, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
@@ -586,8 +715,53 @@ void loop() {
             break;
 
         case TIMER_GOING:
+            if (mood != STUDY || mood != ANGRY) {
+                go_study();
+                mood = STUDY;
+            }
             countdown();
             check_hand();
+            if (lastHandPresence != 0 && mood == STUDY) {
+                angry_start_time = millis();
+                go_angry();
+                mood = ANGRY;
+            }
+            if (mood == ANGRY) {
+                if (lastHandPresence != 0) {
+                    angry_last_hand_detection_time = millis();
+                    if (millis() - angry_start_time >= angry_threshold) {
+                        // The attempt to rescue the phone lasted too long, giving up
+                        status = RELEASE_PHONE;
+                    } else if (!torso->isMoving()) {
+                        // Torso reached the extreme, going to the other side
+                        int8_t new_position = torso->getPosition() > 0 ? -80 : 80;
+                        torso->setPosition(new_position);
+                        head->setPosition(-new_position);
+                    }
+                } else if (millis() - angry_last_hand_detection_time >= angry_cooldown) {
+                    // No detection inside the cooldown interval, reset
+                    go_study();
+                    mood = STUDY;
+                }
+            } else {
+                rand_licking_paw.runCoroutine();
+            }
+            break;
+
+        case RELEASE_PHONE:
+            if (mood != DISAPPOINTED) {
+                disappointment_start_time = millis();
+                go_disappointed();
+                mood = DISAPPOINTED;
+            }
+            // Does not go forward until the animation is finished
+            if (millis() - disappointment_start_time <= disappointment_duration)
+                break;
+            check_phone();
+            if (phonePresent)
+                status = TIMER_GOING;
+            else
+                status = IDLE;
             break;
 
         case TIMER_FINISHED:
@@ -610,5 +784,6 @@ void loop() {
         interrupts();
     }
     blink_eyes.runCoroutine();
+    update_body();
 }
 //missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
