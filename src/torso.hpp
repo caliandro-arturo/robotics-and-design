@@ -39,6 +39,9 @@ class Torso : public Coroutine {
         /** Returns the movement state of the torso. */
         bool isMoving();
 
+        /** Gets the torso position, in degrees. */
+        int8_t getPosition();
+
         ~Torso();
 
     private:

@@ -60,3 +60,7 @@ uint16_t Torso::speed() {
     double q = minDelay - m * start;
     return m * position + q;
 }
+
+int8_t Torso::getPosition() {
+    return map(position, minMicroseconds, maxMicroseconds, -90 + BODY_DELTA, 90 - BODY_DELTA);
+}
