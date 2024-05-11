@@ -21,8 +21,6 @@ class Arms : public Coroutine {
         /** Instantiates the two arms. It is assumed that both the servos
          * are calibrated with the same values.
          *
-         * TODO add distinguished values if needed.
-         *
          * @param leftArmPin       the left arm control pin
          * @param rightArmPin      the right arm control pin
          * @param minMicroseconds  the time representing 0° (in microseconds)
@@ -32,12 +30,6 @@ class Arms : public Coroutine {
              uint8_t rightArmPin,
              uint16_t minMicroseconds,
              uint16_t maxMicroseconds);
-
-        /** Covers the specified phone slot.
-         *
-         * @param slot the phone slot to cover
-         */
-        void coverSlot(uint8_t slot);
 
         /** Shakes briefly. This can be used when the fastest speed is
          * desired.

@@ -42,10 +42,6 @@ Arms::Arms(
     rightArm.writeMicroseconds(minMicroseconds);
 }
 
-void Arms::coverSlot(uint8_t slot) {
-    // TODO
-}
-
 void Arms::shake(uint8_t from, uint8_t to) {
     stop();
     oscillate(from, to, ARMS_SHAKE_DELAY, ARMS_SHAKE_DELAY);
