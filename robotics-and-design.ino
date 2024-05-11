@@ -782,6 +782,7 @@ void loop() {
         noInterrupts();
         shutdown();
         interrupts();
+        status = IDLE;
     }
     blink_eyes.runCoroutine();
     update_body();
