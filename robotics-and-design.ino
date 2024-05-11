@@ -502,6 +502,7 @@ void go_idle() {
 
 void setup() {
     init_power();
+    
     num_blinks = 10;
     eye_setup();
     status = IDLE;
