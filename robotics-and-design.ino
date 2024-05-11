@@ -63,15 +63,15 @@ volatile Status status;
 
 
 void init_phone_slots() {
-    pinMode(SLOT0, INPUT_PULLUP);
-    pinMode(SLOT1, INPUT_PULLUP);
-    pinMode(SLOT2, INPUT_PULLUP);
-    pinMode(SLOT3, INPUT_PULLUP);
+    pinMode(SLOT0, INPUT);
+    pinMode(SLOT1, INPUT);
+    pinMode(SLOT2, INPUT);
+    pinMode(SLOT3, INPUT);
 }
 
 //may be the opposite
 void check_phone() {
-    if (digitalRead(SLOT0) == LOW || digitalRead(SLOT1) == LOW || digitalRead(SLOT2) == LOW || digitalRead(SLOT3) == LOW)  //detected
+     if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH)   //detected
         phonePresent = true;
     else
         phonePresent = false;
@@ -129,19 +129,30 @@ void blink_timer() {
     }
 }
 
-COROUTINE(blink_timer) {
-    COROUTINE_BEGIN();
-    if (num_blinks < 10) {
-        display.clear();
-        COROUTINE_DELAY(100);
-        display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
-        COROUTINE_DELAY(100);
-        num_blinks++;
-    } else {
-        COROUTINE_END();
-    }
-}
 
+/*COROUTINE(blink_timer) {
+    COROUTINE_LOOP() {
+        if (num_blinks < 4) {
+            display.clear();
+            display.setBrightness(0, false);
+            COROUTINE_DELAY(70);
+            display.setBrightness(7, true);
+            display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
+            COROUTINE_DELAY(70);
+            num_blinks++;
+        } else {
+            if (isMinuteSet && !isHourSet) {
+                blink_happy();
+                num_blinks = 0;
+                status = SET_MINUTES;
+            } else if (isMinuteSet && isHourSet) {
+                blink_happy();
+                num_blinks = 0;
+                status = PHONE_CHECK;
+            }
+        }
+    }
+}*/
 
 COROUTINE(blink_dots) {
     COROUTINE_LOOP() {
@@ -347,7 +358,7 @@ uint8_t PISSED_EYE[] = {
     0b00000000
 };
 
-COROUTINE(blink) {
+COROUTINE(blink_eyes) {
     COROUTINE_LOOP() {
         close_eyes();
         COROUTINE_DELAY(50);
@@ -409,6 +420,13 @@ void assign_eye(uint8_t EYE[8]) {
     }
 }
 
+/*COROUTINE(blink_happy) {
+    close_eyes();
+    COROUTINE_DELAY(50);
+    front_eyes(HAPPY_EYE);
+    COROUTINE_DELAY(1000);
+}*/
+
 void blink_happy() {
     close_eyes();
     delay(50);
@@ -435,6 +453,7 @@ void assign_mood() {
             break;
         case ANGRY:
             assign_eye(ANGRY_EYE);
+            //mp3.play(4);
             break;
         case SAD:
             assign_eye(SAD_EYE);
@@ -486,12 +505,12 @@ void go_idle() {
 */
 
 void setup() {
-    status = START;
-    mood = NORMAL;
-    init_power();
+
+    //init_power();
+    num_blinks = 10;
     eye_setup();
     status = IDLE;
-    mood = PISSED;
+    mood = ANGRY;
     assign_mood();
     clock_setup();
     encoderPos = 0;
@@ -500,8 +519,8 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     Serial.begin(115200);
-    Serial3.begin(9600);
-    init_mp3();
+    //Serial3.begin(9600);
+    //init_mp3();
 }
 
 void reset_phone_check() {
@@ -551,7 +570,7 @@ void loop() {
                 num_blinks = 0;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 status = HAPPY_STATE;
-                mp3.play(2);
+                //mp3.play(2);
             }
             increment_hours();
             display.setBrightness(7,true);
@@ -563,8 +582,7 @@ void loop() {
                 Serial.println("Hours set");
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
-                blink_happy();
-                mp3.play(2);
+                //mp3.play(2);
                 isHourSet = true;
                 status = HAPPY_STATE;
             }
@@ -602,13 +620,13 @@ void loop() {
             break;
     }
     assign_mood();
-    if (power_status == OFF) {
+    /*if (power_status == OFF) {
         go_idle();
         noInterrupts();
         shutdown();
         interrupts();
-    }
-    blink.runCoroutine();
+    }*/
+    blink_eyes.runCoroutine();
 }
-
+//single_meow.runCoroutine();
 //missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
