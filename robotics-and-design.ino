@@ -503,7 +503,7 @@ void go_idle() {
 
 void setup() {
 
-    //init_power();
+    init_power();
     num_blinks = 10;
     eye_setup();
     status = IDLE;
@@ -516,8 +516,8 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     Serial.begin(115200);
-    //Serial3.begin(9600);
-    //init_mp3();
+    Serial3.begin(9600);
+    init_mp3();
 }
 
 void reset_phone_check() {
@@ -613,13 +613,12 @@ void loop() {
             break;
     }
     assign_mood();
-    /*if (power_status == OFF) {
+    if (power_status == OFF) {
         go_idle();
         noInterrupts();
         shutdown();
         interrupts();
-    }*/
+    }
     blink_eyes.runCoroutine();
 }
-//single_meow.runCoroutine();
 //missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
