@@ -18,7 +18,7 @@ Ears::Ears(
     rightEar.write(180);
 }
 
-void Ears::move(uint8_t earPin, uint16_t pos) {
+void Ears::setPosition(uint8_t earPin, uint16_t pos) {
     if (earPin == leftEarPin) {
         leftEar.write(pos);
     } else if (earPin == rightEarPin) {

@@ -485,8 +485,8 @@ void go_idle() {
     arms->setPosition(LEFTARM, 0);
     arms->setPosition(RIGHTARM, 0);
     torso->setPositionImmediate(0);
-    ears->move(LEFTEAR, 0);
-    ears->move(RIGHTEAR, 0);
+    ears->setPosition(LEFTEAR, 0);
+    ears->setPosition(RIGHTEAR, 0);
     head->setPosition(0);
     delay(1000);
 }
@@ -494,8 +494,8 @@ void go_idle() {
 /** Sets the robot to the happy mood. Non-blocking. */
 void go_happy() {
     arms->shake(0, 70);
-    ears->move(LEFTEAR, 60);
-    ears->move(RIGHTEAR, 60);
+    ears->setPosition(LEFTEAR, 60);
+    ears->setPosition(RIGHTEAR, 60);
     head->shake(-10, 10);
     torso->setPosition(0);
 }
@@ -531,8 +531,8 @@ void go_disappointed() {
     head->stop();
     arms->shake(0, 30);
     head->shake(-20, 20);
-    ears->move(LEFTEAR, 60);
-    ears->move(RIGHTEAR, 60);
+    ears->setPosition(LEFTEAR, 60);
+    ears->setPosition(RIGHTEAR, 60);
     torso->setPosition(0);
 }
 
@@ -559,14 +559,14 @@ COROUTINE(rand_licking_paw) {
         COROUTINE_DELAY_SECONDS(20);
         uint8_t random_arm = random(1) ? LEFTARM : RIGHTARM;
         uint8_t other_arm = random_arm == LEFTARM ? RIGHTARM : LEFTARM;
-        ears->move(LEFTEAR, 45);
-        ears->move(RIGHTEAR, 45);
+        ears->setPosition(LEFTEAR, 45);
+        ears->setPosition(RIGHTEAR, 45);
         arms->setPosition(random_arm, 130);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
         COROUTINE_DELAY_SECONDS(3);
-        ears->move(LEFTEAR, 0);
-        ears->move(RIGHTEAR, 0);
+        ears->setPosition(LEFTEAR, 0);
+        ears->setPosition(RIGHTEAR, 0);
         arms->setPosition(random_arm, 0);
         arms->setPosition(other_arm, 0);
         head->setPosition(0);
