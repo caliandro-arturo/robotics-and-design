@@ -181,6 +181,16 @@ void reset_encoder() {
     encoderPos = 0;
 }
 
+void reset_timer() {
+    setMinute = 0;
+    setHour = 0;
+    isMinuteSet = 0;
+    isHourSet = 0;
+    minute = 0;
+    hour = 0;
+    reset_encoder();
+}
+
 void increment_hours() {
     if (encoderPos >= 0) {
         hour = (encoderPos % 30) / 10;
