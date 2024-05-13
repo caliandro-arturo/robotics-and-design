@@ -414,6 +414,17 @@ COROUTINE(blink_eyes) {
     }
 }
 
+COROUTINE(zzz_eyes) {
+    COROUTINE_LOOP() {
+        side_eyes(SLEEPY_EYE);
+        COROUTINE_DELAY(800);
+        side_eyes(SLEEPY1_EYE);
+        COROUTINE_DELAY(400);
+        side_eyes(SLEEPY2_EYE);
+        COROUTINE_DELAY(400);
+    }
+}
+
 
 MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
@@ -466,6 +477,9 @@ void assign_eye(uint8_t EYE[8]) {
         currentEye[i] = EYE[i];
     }
 }
+
+
+
 
 COROUTINE(blink_happy) {
     COROUTINE_BEGIN();
@@ -806,7 +820,13 @@ void loop() {
         shutdown();
         status = IDLE;
     }
-    blink_eyes.runCoroutine();
+
+    if (status == IDLE) {
+        zzz_eyes.runCoroutine();
+    } else {
+        blink_eyes.runCoroutine();
+    }
+
     update_body();
 }
 //missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
