@@ -145,41 +145,28 @@ volatile int lastEncoded = 0;
 unsigned long currentMillis;
 
 
-void blink_timer() {
-    for (int i = 0; i < 3; i++) {
-        display.clear();
-        display.setBrightness(0, false);
-        delay(70);
-        display.setBrightness(7, true);
-        display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
-        delay(70);
-    }
+COROUTINE(blink_timer) {
+    COROUTINE_BEGIN();
+    display.clear();
+    display.setBrightness(0, false);
+    COROUTINE_DELAY(70);
+    display.setBrightness(7, true);
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(70);
+    display.clear();
+    display.setBrightness(0, false);
+    COROUTINE_DELAY(70);
+    display.setBrightness(7, true);
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(70);
+    display.clear();
+    display.setBrightness(0, false);
+    COROUTINE_DELAY(70);
+    display.setBrightness(7, true);
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(70);
+    COROUTINE_END();
 }
-
-
-/*COROUTINE(blink_timer) {
-    COROUTINE_LOOP() {
-        if (num_blinks < 4) {
-            display.clear();
-            display.setBrightness(0, false);
-            COROUTINE_DELAY(70);
-            display.setBrightness(7, true);
-            display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
-            COROUTINE_DELAY(70);
-            num_blinks++;
-        } else {
-            if (isMinuteSet && !isHourSet) {
-                blink_happy();
-                num_blinks = 0;
-                status = SET_MINUTES;
-            } else if (isMinuteSet && isHourSet) {
-                blink_happy();
-                num_blinks = 0;
-                status = PHONE_CHECK;
-            }
-        }
-    }
-}*/
 
 COROUTINE(blink_dots) {
     COROUTINE_LOOP() {
@@ -444,18 +431,13 @@ void assign_eye(uint8_t EYE[8]) {
     }
 }
 
-/*COROUTINE(blink_happy) {
+COROUTINE(blink_happy) {
+    COROUTINE_BEGIN();
     close_eyes();
     COROUTINE_DELAY(50);
     front_eyes(HAPPY_EYE);
-    COROUTINE_DELAY(1000);
-}*/
-
-void blink_happy() {
-    close_eyes();
-    delay(50);
-    front_eyes(HAPPY_EYE);
-    delay(950);
+    COROUTINE_DELAY(950);
+    COROUTINE_END();
 }
 
 
@@ -660,11 +642,12 @@ void loop() {
             if (mood != HAPPY) {
                 happy_start_time = millis();
                 go_happy();
+                blink_happy.reset();
+                blink_timer.reset();
                 mood = HAPPY;
             }
-            // TODO These two must be non-blocking, otherwise the body cannot move.
-            blink_timer();
-            blink_happy();
+            blink_timer.runCoroutine();
+            blink_happy.runCoroutine();
             // Until the interaction is not expired, do not touch the status.
             if (millis() - happy_start_time <= happy_duration)
                 break;
