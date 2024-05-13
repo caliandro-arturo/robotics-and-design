@@ -93,7 +93,7 @@ void Arms::setPosition(uint8_t armPin, uint8_t angle) {
 
 int Arms::runCoroutine() {
     COROUTINE_LOOP() {
-        if (canMove) {
+        COROUTINE_AWAIT(!canMove);
             leftArmPos += (leftArmTo >= leftArmFrom) ? 1 : -1;
             rightArmPos += (rightArmTo >= rightArmFrom) ? 1 : -1;
             leftArm.writeMicroseconds(leftArmPos);
@@ -103,7 +103,6 @@ int Arms::runCoroutine() {
                 swap(leftArmFrom, leftArmTo);
                 swap(rightArmFrom, rightArmTo);
             }
-        }
     }
 }
 
