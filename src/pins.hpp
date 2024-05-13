@@ -4,35 +4,40 @@
 #ifndef PINS
 #define PINS
 
-#define LEFTARM
-#define RIGHTARM
-#define LEFTEAR
-#define RIGHTEAR
-#define HEADPIN
-#define BODYPIN
+#define LEFTARM 7
+#define RIGHTARM 32
+#define LEFTEAR 5
+#define RIGHTEAR 28
+#define HEADPIN 6
+#define BODYPIN 30
 
-#define PETSENSOR
+#define PETSENSOR 50  // Just a placeholder
 
-#define SLOT0
-#define SLOT1
-#define SLOT2
-#define SLOT3
+#define SLOT0 4
+#define SLOT1 26
+#define SLOT2 3
+#define SLOT3 24
 
-#define LED0_RED
-#define LED0_BLUE
-#define LED0_GREEN
-#define LED1_RED
-#define LED1_BLUE
-#define LED1_GREEN
-#define LED2_RED
-#define LED2_BLUE
-#define LED2_GREEN
-#define LED3_RED
-#define LED3_BLUE
-#define LED3_GREEN
 
-#define ENCODER_CW
-#define ENCODER_DT
-#define ENCODER_SW
+#define TIMER_CLK 16
+#define TIMER_DIO 17
+
+
+#define LEFTPROX 2
+#define RIGHTPROX 22
+
+#define ENCODER_CLK 12
+#define ENCODER_DT 11
+#define ENCODER_SW 10
+
+#define MP3READER_TX 14
+#define MP3READER_RX 15
+
+#define EYE_DIN 21
+#define EYE_CS 20
+#define EYE_CLK 19
+
+#define POWER_BTN 18
+#define RELAY_CTRL 9
 
 #endif

@@ -1,3 +1,7 @@
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include "ears.hpp"
 
 Ears::Ears(
@@ -10,15 +14,15 @@ Ears::Ears(
 
     leftEar.attach(leftEarPin, minMicroseconds, maxMicroseconds);
     rightEar.attach(rightEarPin, minMicroseconds, maxMicroseconds);
-    leftEar.write(180);
-    rightEar.write(0);
+    leftEar.write(0);
+    rightEar.write(180);
 }
 
-void Ears::move(uint8_t earPin, uint16_t pos) {
+void Ears::setPosition(uint8_t earPin, uint16_t pos) {
     if (earPin == leftEarPin) {
-        leftEar.write(180 - pos);
+        leftEar.write(pos);
     } else if (earPin == rightEarPin) {
-        rightEar.write(pos);
+        rightEar.write(180 - pos);
     }
 }
 

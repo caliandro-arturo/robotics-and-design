@@ -1,3 +1,7 @@
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include <stdint.h>
 #include <Servo.h>
 
@@ -22,7 +26,7 @@ class Ears {
          * @param earPin    the ear to move
          * @param angle     the position that the ear must reach (in degrees)
         */
-        void move(uint8_t earPin, uint16_t pos);
+        void setPosition(uint8_t earPin, uint16_t pos);
 
         ~Ears();
     private:

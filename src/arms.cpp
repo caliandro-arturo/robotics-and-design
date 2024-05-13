@@ -1,6 +1,7 @@
-#include <Arduino.h>
-#include <AceRoutine.h>
-#include <Servo.h>
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include "arms.hpp"
 #include "pins.hpp"
 #include "servoCalibration.hpp"
@@ -39,10 +40,6 @@ Arms::Arms(
     rightArm.attach(rightArmPin, minMicroseconds, maxMicroseconds);
     leftArm.writeMicroseconds(maxMicroseconds);
     rightArm.writeMicroseconds(minMicroseconds);
-}
-
-void Arms::coverSlot(uint8_t slot) {
-    // TODO
 }
 
 void Arms::shake(uint8_t from, uint8_t to) {
@@ -96,7 +93,7 @@ void Arms::setPosition(uint8_t armPin, uint8_t angle) {
 
 int Arms::runCoroutine() {
     COROUTINE_LOOP() {
-        if (canMove) {
+        COROUTINE_AWAIT(!canMove);
             leftArmPos += (leftArmTo >= leftArmFrom) ? 1 : -1;
             rightArmPos += (rightArmTo >= rightArmFrom) ? 1 : -1;
             leftArm.writeMicroseconds(leftArmPos);
@@ -106,7 +103,6 @@ int Arms::runCoroutine() {
                 swap(leftArmFrom, leftArmTo);
                 swap(rightArmFrom, rightArmTo);
             }
-        }
     }
 }
 

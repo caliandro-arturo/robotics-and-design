@@ -1,3 +1,7 @@
+/**
+ * Author: Arturo Caliandro <arturo.caliandro@mail.polimi.it>
+*/
+
 #include "head.hpp"
 #include "servoCalibration.hpp"
 
