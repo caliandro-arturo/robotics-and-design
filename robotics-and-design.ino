@@ -188,6 +188,9 @@ void reset_timer() {
     isHourSet = 0;
     minute = 0;
     hour = 0;
+    display.clear();
+    display.setBrightness(7, true);
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     reset_encoder();
 }
 
@@ -611,6 +614,10 @@ void setup() {
     go_idle();
     Serial.begin(115200);
     Serial3.begin(9600);
+    if (power_status == OFF) {
+        shutdown();
+        reset_timer();
+    }
     init_mp3();
 }
 
@@ -773,9 +780,7 @@ void loop() {
     assign_mood();
     if (power_status == OFF) {
         go_idle();
-        noInterrupts();
         shutdown();
-        interrupts();
         status = IDLE;
     }
     blink_eyes.runCoroutine();

@@ -30,14 +30,13 @@ void power_check() {
 // first disabled == last re-enabled.
 void shutdown() {
     // Turn off
+    noInterrupts();
     screen.displayOff();
-    display.clear();
     PCICR &= ~bit(digitalPinToPCICRbit(ENCODER_CLK));
     digitalWrite(RELAY_CTRL, HIGH);
     interrupts();
     LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);  // Execution frozen here
     // Turn on
-    noInterrupts();
     digitalWrite(RELAY_CTRL, LOW);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
     screen.displayOn();
