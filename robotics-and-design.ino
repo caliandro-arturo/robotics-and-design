@@ -241,7 +241,7 @@ void clock_setup() {
     isHourSet = false;
     display.showNumberDecEx(minute, 0b01000000, true);
     pinMode(ENCODER_CLK, INPUT);  //encoder input setup
-    pinMode(ENCODER_DT, INPUT_PULLUP);
+    pinMode(ENCODER_DT, INPUT);
     pinMode(ENCODER_SW, INPUT_PULLUP);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
     *digitalPinToPCMSK(ENCODER_CLK) |= bit(digitalPinToPCMSKbit(ENCODER_CLK))
