@@ -8,20 +8,21 @@
 #include <LowPower.h>
 #include <TM1637Display.h>
 
-volatile power power_status = OFF;
+volatile power power_status = ON;
 
 extern MATRIX7219 screen;
 extern TM1637Display display;
 
 void init_power() {
+    pinMode(POWER_BTN, INPUT);
     attachInterrupt(digitalPinToInterrupt(POWER_BTN), power_check, CHANGE);
-    pinMode(RELAY_CTRL, INPUT);
+    pinMode(RELAY_CTRL, OUTPUT);
     power_check();
 }
 
 void power_check() {
     if (digitalRead(POWER_BTN) == LOW && power_status == ON) {
-        power_status == OFF;
+        power_status = OFF;
     }
 }
 
