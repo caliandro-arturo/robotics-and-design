@@ -428,11 +428,6 @@ COROUTINE(zzz_eyes) {
 
 MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
-void print_matrix(uint8_t image[8], uint8_t display = 1) {
-    for (int i = 1; i <= 8; i++) {
-        screen.setRow(i, image[i - 1], display);
-    }
-}
 
 uint8_t reverse(uint8_t b) {
     b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
