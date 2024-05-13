@@ -598,6 +598,7 @@ void setup() {
     pinMode(RIGHTPROX, INPUT_PULLUP);
     init_phone_slots();
     init_body_parts();
+    go_idle();
     Serial.begin(115200);
     Serial3.begin(9600);
     init_mp3();
