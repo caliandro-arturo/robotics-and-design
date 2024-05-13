@@ -590,7 +590,7 @@ void setup() {
     num_blinks = 10;
     eye_setup();
     status = IDLE;
-    mood = ANGRY;
+    mood = PISSED;
     assign_mood();
     clock_setup();
     encoderPos = 0;
