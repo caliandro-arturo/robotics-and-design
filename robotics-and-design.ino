@@ -636,7 +636,7 @@ COROUTINE(rand_licking_paw) {
         other_arm = random_arm == LEFTARM ? RIGHTARM : LEFTARM;
         ears->setPosition(LEFTEAR, 45);
         ears->setPosition(RIGHTEAR, 45);
-        arms->setPosition(random_arm, 130);
+        arms->setPosition(random_arm, 100);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
         COROUTINE_DELAY_SECONDS(3);
