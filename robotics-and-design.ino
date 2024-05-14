@@ -867,6 +867,7 @@ void loop() {
     if (power_status == OFF) {
         go_idle();
         shutdown();
+        reset_timer();
         status = IDLE;
     }
     if (status == IDLE && mood != HAPPY) {
