@@ -33,15 +33,15 @@ enum Mood { NORMAL,
             HAPPY,
             SAD,
             ANGRY,
-            PISSED,
             STUDY,
+            SLEEP,
             DISAPPOINTED };
 
 volatile Mood mood;
 
 enum Status { IDLE,
               START,
-              HAPPY_STATE,
+              FEEDBACK_STATE,
               SET_MINUTES,
               SET_HOURS,
               PHONE_CHECK,
@@ -53,7 +53,8 @@ volatile Status status;
 
 unsigned long happy_start_time;
 // TODO define this
-unsigned long happy_duration = 3000;
+unsigned long happy_duration = 2000;
+int triggerFlag = 0;
 
 uint8_t lastHandPresence = 0;
 unsigned long angry_start_time;
@@ -113,13 +114,13 @@ void check_phone() {
 DFRobotDFPlayerMini mp3;
 int current_meow = 2;
 
-void init_mp3() {
+/*void init_mp3() {
     if (!mp3.begin(Serial3)) {
         Serial.println("error");
         while (true);
     }
     mp3.volume(20);
-}
+}*/
 
 
 /*
@@ -210,11 +211,18 @@ void increment_minutes() {
     }
 }
 
-
 void increment_status() {
     if (status == SET_MINUTES || status == SET_HOURS)
-        status = HAPPY_STATE;
+        status = FEEDBACK_STATE;
+    /* else if (status == SET_HOURS) {
+        if (100 * hour + setMinute <= 30) {
+            status = SAD_STATE;
+        } else {
+            status = FEEDBACK_STATE;
+        }
+    }*/
 }
+
 
 void encoderISR() {
     int MSB = digitalRead(ENCODER_CLK);
@@ -228,7 +236,8 @@ void encoderISR() {
     } else if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) {
         encoderPos++;
     }
-
+    if (!triggerFlag)
+        previousTriggerMillis = millis();
     lastEncoded = encoded;
 }
 
@@ -263,13 +272,7 @@ void clock_setup() {
 }
 
 
-void trigger_user() {
-    currentMillis = millis();
-    if (currentMillis - previousTriggerMillis >= 15000 && !isMinuteSet) {
-        Serial.println("we");
-        previousTriggerMillis = currentMillis;
-    }
-}
+
 
 
 
@@ -394,7 +397,7 @@ uint8_t HAPPY_EYE[] = {
     0b00000000
 };
 
-uint8_t PISSED_EYE[] = {
+uint8_t DISAPPOINTED_EYE[] = {
     0b00000000,
     0b00000000,
     0b00000000,
@@ -407,10 +410,15 @@ uint8_t PISSED_EYE[] = {
 
 COROUTINE(blink_eyes) {
     COROUTINE_LOOP() {
-        close_eyes();
-        COROUTINE_DELAY(50);
-        front_eyes(currentEye);
-        COROUTINE_DELAY(1500);
+        if (mood == DISAPPOINTED) {
+            front_eyes(DISAPPOINTED_EYE);
+            COROUTINE_DELAY(100);
+        } else {
+            close_eyes();
+            COROUTINE_DELAY(50);
+            front_eyes(currentEye);
+            COROUTINE_DELAY(1500);
+        }
     }
 }
 
@@ -485,11 +493,40 @@ COROUTINE(blink_happy) {
     COROUTINE_END();
 }
 
+COROUTINE(blink_sad) {
+    COROUTINE_BEGIN();
+    close_eyes();
+    COROUTINE_DELAY(50);
+    front_eyes(SAD_EYE);
+    COROUTINE_DELAY(950);
+    COROUTINE_END();
+}
+
 
 void eye_setup() {
     screen.begin();
     screen.setBrightness(1);
     screen.clear();
+}
+
+void trigger_user() {
+    currentMillis = millis();
+
+    if (currentMillis - previousTriggerMillis >= 10000 /*&& currentMillis - previousTriggerMillis < 14000*/) {
+        mood = DISAPPOINTED;
+        blink_timer.runCoroutine();
+        triggerFlag = 1;
+        Serial.println(triggerFlag);
+    }
+    if (currentMillis - previousTriggerMillis >= 14000) {
+        mood = NORMAL;
+        blink_timer.reset();
+        display.setBrightness(7, true);
+        display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+        triggerFlag = 0;
+        Serial.println(mood);
+        previousTriggerMillis = currentMillis;
+    }
 }
 
 /*
@@ -609,6 +646,9 @@ void assign_mood() {
         case NORMAL:
             assign_eye(FRONT_EYE);
             break;
+        case STUDY:
+            assign_eye(FRONT_EYE);
+            break;
         case ANGRY:
             assign_eye(ANGRY_EYE);
             //mp3.play(4);
@@ -616,8 +656,8 @@ void assign_mood() {
         case SAD:
             assign_eye(SAD_EYE);
             break;
-        case PISSED:
-            assign_eye(PISSED_EYE);
+        case DISAPPOINTED:
+            assign_eye(DISAPPOINTED_EYE);
             break;
     }
 }
@@ -635,7 +675,7 @@ void setup() {
     num_blinks = 10;
     eye_setup();
     status = IDLE;
-    mood = PISSED;
+    mood = SLEEP;
     assign_mood();
     clock_setup();
     encoderPos = 0;
@@ -644,13 +684,13 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     go_idle();
-    Serial.begin(115200);
-    Serial3.begin(9600);
+    Serial.begin(9600);
+    //Serial3.begin(9600);
     if (power_status == OFF) {
         shutdown();
         reset_timer();
     }
-    init_mp3();
+    //init_mp3();
 }
 
 void reset_phone_check() {
@@ -661,15 +701,15 @@ void reset_phone_check() {
 void loop() {
     switch (status) {
         case IDLE:
-            if (mood != PISSED) {
+            if (mood != SLEEP) {
                 // This must be done before everything else, cannot wait
                 // for the end of the switch to set the pose.
                 go_idle();
-                mood = PISSED;
+                mood = SLEEP;
             }
             rand_head.runCoroutine();
             check_phone();
-            if (encoderPos != 0 || phonePresent == true) {
+            if (encoderPos != 0 /*|| phonePresent == true*/) {
                 display.setBrightness(7, true);
                 increment_minutes();
                 display.showNumberDecEx(minute, 0b01000000, true);
@@ -688,19 +728,31 @@ void loop() {
             trigger_user();
             break;
 
-        case HAPPY_STATE:
-            if (mood != HAPPY) {
+        case FEEDBACK_STATE:
+            if (mood != HAPPY || mood != SAD) {
                 happy_start_time = millis();
-                go_happy();
-                blink_happy.reset();
                 blink_timer.reset();
-                mood = HAPPY;
+
+                if (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) {
+                    blink_sad.reset();
+                    mood = SAD;
+                } else {
+                    mood = HAPPY;
+                    go_happy();
+                    blink_happy.reset();
+                }
             }
             blink_timer.runCoroutine();
-            blink_happy.runCoroutine();
+
+            if (mood == SAD)
+                blink_sad.runCoroutine();
+            else
+                blink_happy.runCoroutine();
+
             // Until the interaction is not expired, do not touch the status.
             if (millis() - happy_start_time <= happy_duration)
                 break;
+            happy_stop();
             // Select the new state
             if (isMinuteSet && isHourSet) {
                 isMinuteSet = false;
@@ -712,6 +764,7 @@ void loop() {
                 isMinuteSet = true;
                 setMinute = minute;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
+                previousTriggerMillis = millis();
                 status = SET_HOURS;
             } else if (isMinuteSet == 1 && isHourSet == 0) {
                 Serial.println("Hours set");
@@ -730,6 +783,7 @@ void loop() {
             increment_hours();
             display.setBrightness(7, true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
+            trigger_user();
             break;
 
         case PHONE_CHECK:
@@ -806,7 +860,7 @@ void loop() {
             setMinute = 0;
             reset_encoder();
             display.showNumberDecEx(0x00, 0b01000000, true);
-            status = HAPPY_STATE;
+            status = FEEDBACK_STATE;
             break;
     }
     assign_mood();
@@ -815,10 +869,9 @@ void loop() {
         shutdown();
         status = IDLE;
     }
-
-    if (status == IDLE) {
+    if (status == IDLE && mood != HAPPY) {
         zzz_eyes.runCoroutine();
-    } else {
+    } else if (mood != HAPPY && mood != SAD) {
         blink_eyes.runCoroutine();
     }
 
