@@ -579,6 +579,12 @@ void happy_stop() {
     head->stop();
 }
 
+/** Sets the robot sad. Non-blocking. */
+void go_sad() {
+    ears->setPosition(LEFTEAR, 60);
+    ears->setPosition(RIGHTEAR, 90);
+}
+
 /** Sets the robot in the study phase, that is the normal state, plus
  * random licking a paw.
 */
@@ -746,6 +752,7 @@ void loop() {
 
                 if (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) {
                     blink_sad.reset();
+                    go_sad();
                     mood = SAD;
                 } else {
                     mood = HAPPY;
