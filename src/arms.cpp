@@ -62,14 +62,14 @@ void Arms::oscillate(
         swap(fromUs, toUs);
         swap(from, to);
     }
-    leftArmFrom = fromUs;
-    leftArmTo = toUs;
-    rightArmFrom = fromUs;
-    rightArmTo = toUs;
-    leftArm.writeMicroseconds(fromUs);
-    leftArmPos = fromUs;
-    rightArm.writeMicroseconds(toUs);
-    rightArmPos = fromUs;
+    leftArmFrom = maxMicroseconds + minMicroseconds - fromUs;
+    leftArmTo = maxMicroseconds + minMicroseconds - toUs;
+    rightArmFrom = toUs;
+    rightArmTo = fromUs;
+    setPosition(LEFTARM, from);
+    leftArmPos = leftArmFrom;
+    setPosition(RIGHTARM, to);
+    rightArmPos = toUs;
     canMove = true;
 }
 
@@ -83,8 +83,7 @@ void Arms::reset() {
 }
 
 void Arms::setPosition(uint8_t armPin, uint8_t angle) {
-    if (armPin == leftArmPin)
-        leftArm.write(angle);
+    if (armPin == leftArmPin) leftArm.write(180 - angle);
     else if (armPin == rightArmPin)
         rightArm.write(angle);
     else
