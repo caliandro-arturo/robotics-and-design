@@ -151,19 +151,19 @@ COROUTINE(blink_timer) {
     display.clear();
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
-    display.setBrightness(7, true);
+    display.setBrightness(1, true);
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     COROUTINE_DELAY(70);
     display.clear();
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
-    display.setBrightness(7, true);
+    display.setBrightness(1, true);
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     COROUTINE_DELAY(70);
     display.clear();
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
-    display.setBrightness(7, true);
+    display.setBrightness(1, true);
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     COROUTINE_DELAY(70);
     COROUTINE_END();
@@ -190,7 +190,7 @@ void reset_timer() {
     minute = 0;
     hour = 0;
     display.clear();
-    display.setBrightness(7, true);
+    display.setBrightness(1, true);
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     reset_encoder();
 }
@@ -255,7 +255,7 @@ ISR(PCINT0_vect) {
 
 void clock_setup() {
     counter = 0;
-    display.setBrightness(7, true);
+    display.setBrightness(1, true);
     display.clear();
     minute = 0;
     hour = 0;
@@ -628,6 +628,7 @@ COROUTINE(rand_licking_paw) {
         arms->setPosition(random_arm, 130);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
+        // TODO insert sound here
         COROUTINE_DELAY_SECONDS(3);
         ears->setPosition(LEFTEAR, 0);
         ears->setPosition(RIGHTEAR, 0);
@@ -684,8 +685,8 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     go_idle();
-    Serial.begin(9600);
-    //Serial3.begin(9600);
+    Serial.begin(115200);
+    Serial3.begin(9600);
     if (power_status == OFF) {
         shutdown();
         reset_timer();
@@ -707,10 +708,11 @@ void loop() {
                 go_idle();
                 mood = SLEEP;
             }
+            // Serial.println("I am here");
             rand_head.runCoroutine();
             check_phone();
-            if (encoderPos != 0 /*|| phonePresent == true*/) {
-                display.setBrightness(7, true);
+            if (encoderPos != 0 || phonePresent == true) {
+                display.setBrightness(1, true);
                 increment_minutes();
                 display.showNumberDecEx(minute, 0b01000000, true);
                 previousTriggerMillis = millis();
@@ -781,7 +783,7 @@ void loop() {
                 mood = NORMAL;
             }
             increment_hours();
-            display.setBrightness(7, true);
+            display.setBrightness(1, true);
             display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             trigger_user();
             break;
@@ -791,7 +793,7 @@ void loop() {
                 go_idle();
                 mood = NORMAL;
             }
-            display.setBrightness(7, true);
+            display.setBrightness(1, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
             if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
@@ -806,10 +808,15 @@ void loop() {
                 go_study();
                 mood = STUDY;
             }
+            Serial.println("Before countdown");
             countdown();
+            Serial.println("After countdown");
             check_hand();
+            Serial.print("Left: " + String(digitalRead(LEFTPROX)));
+            Serial.println(", right: " + String(digitalRead(RIGHTPROX)));
             if (lastHandPresence != 0 && mood == STUDY) {
                 angry_start_time = millis();
+                Serial.println("Before going angry");
                 go_angry();
                 mood = ANGRY;
             }
@@ -831,7 +838,9 @@ void loop() {
                     mood = STUDY;
                 }
             } else {
+                Serial.println("Before licking paw");
                 rand_licking_paw.runCoroutine();
+                Serial.println("After licking paw");
             }
             break;
 
@@ -863,7 +872,9 @@ void loop() {
             status = FEEDBACK_STATE;
             break;
     }
+    Serial.println("Before mood");
     assign_mood();
+    Serial.println("After mood");
     if (power_status == OFF) {
         go_idle();
         shutdown();
@@ -872,9 +883,13 @@ void loop() {
     if (status == IDLE && mood != HAPPY) {
         zzz_eyes.runCoroutine();
     } else if (mood != HAPPY && mood != SAD) {
+        Serial.println("Before blink");
         blink_eyes.runCoroutine();
+        Serial.println("After blink");
     }
 
+    Serial.println("Before body update");
     update_body();
+    Serial.println("After body update");
 }
 //missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
