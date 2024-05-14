@@ -684,8 +684,8 @@ void setup() {
     init_phone_slots();
     init_body_parts();
     go_idle();
-    Serial.begin(9600);
-    //Serial3.begin(9600);
+    Serial.begin(115200);
+    Serial3.begin(9600);
     if (power_status == OFF) {
         shutdown();
         reset_timer();
