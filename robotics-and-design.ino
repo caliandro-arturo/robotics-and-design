@@ -729,7 +729,7 @@ void loop() {
             break;
 
         case FEEDBACK_STATE:
-            if (mood != HAPPY || mood != SAD) {
+            if (mood != HAPPY && mood != SAD) {
                 happy_start_time = millis();
                 blink_timer.reset();
 
@@ -802,7 +802,7 @@ void loop() {
             break;
 
         case TIMER_GOING:
-            if (mood != STUDY || mood != ANGRY) {
+            if (mood != STUDY && mood != ANGRY) {
                 go_study();
                 mood = STUDY;
             }
