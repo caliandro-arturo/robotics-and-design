@@ -709,7 +709,7 @@ void loop() {
             }
             rand_head.runCoroutine();
             check_phone();
-            if (encoderPos != 0 /*|| phonePresent == true*/) {
+            if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
                 increment_minutes();
                 display.showNumberDecEx(minute, 0b01000000, true);
