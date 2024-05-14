@@ -41,8 +41,7 @@ volatile Mood mood;
 
 enum Status { IDLE,
               START,
-              HAPPY_STATE,
-              SAD_STATE,
+              FEEDBACK_STATE,
               SET_MINUTES,
               SET_HOURS,
               PHONE_CHECK,
@@ -212,11 +211,18 @@ void increment_minutes() {
     }
 }
 
-
 void increment_status() {
     if (status == SET_MINUTES || status == SET_HOURS)
-        status = HAPPY_STATE;
+        status = FEEDBACK_STATE;
+    /* else if (status == SET_HOURS) {
+        if (100 * hour + setMinute <= 30) {
+            status = SAD_STATE;
+        } else {
+            status = FEEDBACK_STATE;
+        }
+    }*/
 }
+
 
 void encoderISR() {
     int MSB = digitalRead(ENCODER_CLK);
@@ -722,16 +728,26 @@ void loop() {
             trigger_user();
             break;
 
-        case HAPPY_STATE:
-            if (mood != HAPPY) {
+        case FEEDBACK_STATE:
+            if (mood != HAPPY || mood != SAD) {
                 happy_start_time = millis();
                 blink_timer.reset();
-                mood = HAPPY;
-                go_happy();
-                blink_happy.reset();
+
+                if (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) {
+                    blink_sad.reset();
+                    mood = SAD;
+                } else {
+                    mood = HAPPY;
+                    go_happy();
+                    blink_happy.reset();
+                }
             }
             blink_timer.runCoroutine();
-            blink_happy.runCoroutine();
+
+            if (mood == SAD)
+                blink_sad.runCoroutine();
+            else
+                blink_happy.runCoroutine();
 
             // Until the interaction is not expired, do not touch the status.
             if (millis() - happy_start_time <= happy_duration)
@@ -757,16 +773,6 @@ void loop() {
                 isHourSet = true;
                 status = PHONE_CHECK;
             }
-            break;
-
-        case SAD_STATE:
-            //  if(isMinuteSet == 1 && isHourSet == 0 && 100* hours + setMinutes <= 30){
-            if (mood != SAD) {
-                mood = SAD;
-                blink_sad.reset();
-            }
-            blink_sad.runCoroutine();
-
             break;
 
         case SET_HOURS:
@@ -854,7 +860,7 @@ void loop() {
             setMinute = 0;
             reset_encoder();
             display.showNumberDecEx(0x00, 0b01000000, true);
-            status = HAPPY_STATE;
+            status = FEEDBACK_STATE;
             break;
     }
     assign_mood();
@@ -865,7 +871,7 @@ void loop() {
     }
     if (status == IDLE && mood != HAPPY) {
         zzz_eyes.runCoroutine();
-    } else if (mood != HAPPY) {
+    } else if (mood != HAPPY && mood != SAD) {
         blink_eyes.runCoroutine();
     }
 
