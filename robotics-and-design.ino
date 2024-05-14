@@ -512,11 +512,12 @@ void eye_setup() {
 void trigger_user() {
     currentMillis = millis();
 
-    if (currentMillis - previousTriggerMillis >= 10000 /*&& currentMillis - previousTriggerMillis < 14000*/) {
+    if (currentMillis - previousTriggerMillis >= 10000 && triggerFlag != 1) {
         mood = DISAPPOINTED;
-        blink_timer.runCoroutine();
         triggerFlag = 1;
-        Serial.println(triggerFlag);
+        // Serial.println(triggerFlag);
+    } else {
+        blink_timer.runCoroutine();
     }
     if (currentMillis - previousTriggerMillis >= 14000) {
         mood = NORMAL;
@@ -719,7 +720,7 @@ void loop() {
             break;
 
         case SET_MINUTES:
-            if (mood != NORMAL) {
+            if (mood != NORMAL && mood != DISAPPOINTED) {
                 go_idle();
                 mood = NORMAL;
             }
@@ -776,7 +777,7 @@ void loop() {
             break;
 
         case SET_HOURS:
-            if (mood != NORMAL) {
+            if (mood != NORMAL && mood != DISAPPOINTED) {
                 go_idle();
                 mood = NORMAL;
             }
