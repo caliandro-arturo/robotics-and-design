@@ -708,7 +708,6 @@ void loop() {
                 go_idle();
                 mood = SLEEP;
             }
-            rand_head.runCoroutine();
             check_phone();
             if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
