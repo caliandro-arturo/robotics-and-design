@@ -178,6 +178,17 @@ COROUTINE(blink_dots) {
     }
 }
 
+COROUTINE(blink_dots_only) {
+    COROUTINE_LOOP() {
+        static uint8_t colon_display[] = { 0, 0b10000000, 0, 0 };
+        static uint8_t empty_display[] = { 0, 0, 0, 0 };
+        display.setSegments(empty_display, 4);
+        COROUTINE_DELAY(500);
+        display.setSegments(colon_display, 4);
+        COROUTINE_DELAY(500);
+    }
+}
+
 void reset_encoder() {
     encoderPos = 0;
 }
@@ -189,9 +200,6 @@ void reset_timer() {
     isHourSet = 0;
     minute = 0;
     hour = 0;
-    display.clear();
-    display.setBrightness(7, true);
-    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     reset_encoder();
 }
 
@@ -708,6 +716,7 @@ void loop() {
                 go_idle();
                 mood = SLEEP;
             }
+            blink_dots_only.runCoroutine();
             check_phone();
             if (encoderPos != 0 || phonePresent == true) {
                 display.setBrightness(7, true);
