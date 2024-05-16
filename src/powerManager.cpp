@@ -10,7 +10,7 @@
 
 volatile power power_status = ON;
 
-extern MATRIX7219 screen;
+extern MATRIX7219 *screen;
 extern TM1637Display display;
 
 void init_power() {
@@ -31,7 +31,7 @@ void power_check() {
 void shutdown() {
     // Turn off
     noInterrupts();
-    screen.displayOff();
+    screen->displayOff();
     PCICR &= ~bit(digitalPinToPCICRbit(ENCODER_CLK));
     digitalWrite(RELAY_CTRL, HIGH);
     interrupts();
@@ -39,6 +39,6 @@ void shutdown() {
     // Turn on
     digitalWrite(RELAY_CTRL, LOW);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
-    screen.displayOn();
+    screen->displayOn();
     power_status = ON;
 }
