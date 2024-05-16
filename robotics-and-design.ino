@@ -442,7 +442,7 @@ COROUTINE(zzz_eyes) {
 }
 
 
-MATRIX7219 *screen;
+MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
 
 uint8_t reverse(uint8_t b) {
@@ -454,30 +454,30 @@ uint8_t reverse(uint8_t b) {
 
 void close_eyes() {
     for (int i = 1; i <= 4; i++) {
-        screen->setRow(i, 0, 1);
-        screen->setRow(8 - i + 1, 0, 1);
-        screen->setRow(i, 0, 2);
-        screen->setRow(8 - i + 1, 0, 2);
+        screen.setRow(i, 0, 1);
+        screen.setRow(8 - i + 1, 0, 1);
+        screen.setRow(i, 0, 2);
+        screen.setRow(8 - i + 1, 0, 2);
         delay(30);
     }
 }
 
 void side_eyes(uint8_t EYE[]) {
     for (int i = 4; i >= 1; i--) {
-        screen->setRow(i, EYE[i - 1], 1);
-        screen->setRow(8 - i + 1, EYE[8 - i], 1);
-        screen->setRow(i, EYE[i - 1], 2);
-        screen->setRow(8 - i + 1, EYE[8 - i], 2);
+        screen.setRow(i, EYE[i - 1], 1);
+        screen.setRow(8 - i + 1, EYE[8 - i], 1);
+        screen.setRow(i, EYE[i - 1], 2);
+        screen.setRow(8 - i + 1, EYE[8 - i], 2);
         delay(30);
     }
 }
 
 void front_eyes(uint8_t EYE[]) {
     for (int i = 4; i >= 1; i--) {
-        screen->setRow(i, EYE[i - 1], 1);
-        screen->setRow(8 - i + 1, EYE[8 - i], 1);
-        screen->setRow(i, reverse(EYE[i - 1]), 2);
-        screen->setRow(8 - i + 1, reverse(EYE[8 - i]), 2);
+        screen.setRow(i, EYE[i - 1], 1);
+        screen.setRow(8 - i + 1, EYE[8 - i], 1);
+        screen.setRow(i, reverse(EYE[i - 1]), 2);
+        screen.setRow(8 - i + 1, reverse(EYE[8 - i]), 2);
         delay(30);
     }
 }
@@ -512,9 +512,9 @@ COROUTINE(blink_sad) {
 
 
 void eye_setup() {
-    screen->begin();
-    screen->setBrightness(1);
-    screen->clear();
+    screen.begin();
+    screen.setBrightness(1);
+    screen.clear();
 }
 
 void trigger_user() {
@@ -690,6 +690,7 @@ void assign_mood() {
 void setup() {
     init_power();
     num_blinks = 10;
+    eye_setup();
     status = IDLE;
     mood = SLEEP;
     assign_mood();
@@ -702,8 +703,6 @@ void setup() {
     go_idle();
     Serial.begin(115200);
     Serial3.begin(9600);
-    screen = new MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
-    eye_setup();
     if (power_status == OFF) {
         shutdown();
         reset_timer();
