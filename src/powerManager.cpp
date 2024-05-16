@@ -44,7 +44,7 @@ void shutdown() {
     // Turn on
     digitalWrite(RELAY_CTRL, LOW);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
-    delay(5);   // Workaround to ensure flawless communication with displays
+    delay(10);  // Workaround to ensure flawless communication with displays
     eye_setup();
     reset_timer();
     power_status = ON;
