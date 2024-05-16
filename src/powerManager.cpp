@@ -13,6 +13,9 @@ volatile power power_status = ON;
 extern MATRIX7219 screen;
 extern TM1637Display display;
 
+extern void eye_setup();
+extern void reset_timer();
+
 void init_power() {
     pinMode(POWER_BTN, INPUT);
     attachInterrupt(digitalPinToInterrupt(POWER_BTN), power_check, CHANGE);
@@ -31,7 +34,9 @@ void power_check() {
 void shutdown() {
     // Turn off
     noInterrupts();
-    screen.displayOff();
+    digitalWrite(EYE_CLK, LOW);
+    digitalWrite(EYE_CS, LOW);
+    digitalWrite(EYE_DIN, LOW);
     PCICR &= ~bit(digitalPinToPCICRbit(ENCODER_CLK));
     digitalWrite(RELAY_CTRL, HIGH);
     interrupts();
@@ -39,6 +44,8 @@ void shutdown() {
     // Turn on
     digitalWrite(RELAY_CTRL, LOW);
     PCICR |= bit(digitalPinToPCICRbit(ENCODER_CLK));
-    screen.displayOn();
+    delay(5);   // Workaround to ensure flawless communication with displays
+    eye_setup();
+    reset_timer();
     power_status = ON;
 }

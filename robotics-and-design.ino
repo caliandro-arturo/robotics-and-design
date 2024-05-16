@@ -690,11 +690,11 @@ void assign_mood() {
 void setup() {
     init_power();
     num_blinks = 10;
-    eye_setup();
     status = IDLE;
     mood = SLEEP;
     assign_mood();
     clock_setup();
+    eye_setup();
     encoderPos = 0;
     pinMode(LEFTPROX, INPUT_PULLUP);
     pinMode(RIGHTPROX, INPUT_PULLUP);
@@ -705,7 +705,6 @@ void setup() {
     Serial3.begin(9600);
     if (power_status == OFF) {
         shutdown();
-        reset_timer();
     }
     //init_mp3();
 }
@@ -886,7 +885,6 @@ void loop() {
     if (power_status == OFF) {
         go_idle();
         shutdown();
-        reset_timer();
         status = IDLE;
     }
     if (status == IDLE && mood != HAPPY) {
