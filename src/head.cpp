@@ -29,22 +29,27 @@ Head::Head(uint8_t headPin,
 
 void Head::setPosition(int8_t pos) {
     stop();
+    from = pos + 90;
+    to = pos + 90;
     position = pos + 90;
     head.write(position);
 }
 
 void Head::shake(int8_t from, int8_t to) {
     stop();
-    int8_t &nearest = (abs((int)(from - position - 90)) < abs((int)(to - position - 90))) ? from : to;
+    from += 90;
+    to += 90;
+    if (from > to) {
+        swap(from, to);
+    }
+    int8_t &nearest = (abs((int)(from - position)) < abs((int)(to - position))) ? from : to;
     // pin in between
-    if (from <= position && position <= to || to <= position && position <= from) {
-        if (this->from > this->to) {
-            swap(from, to);
-        }
-    } else
+    if (position < from || position > to) {
+        position = nearest;
         head.write(nearest);
-    this->from = from + 90;
-    this->to = to + 90;
+    }
+    this->from = from;
+    this->to = to;
     canMove = true;
 }
 
