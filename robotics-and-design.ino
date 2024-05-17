@@ -169,6 +169,62 @@ COROUTINE(blink_timer) {
     COROUTINE_END();
 }
 
+COROUTINE(blink_hours) {
+    COROUTINE_BEGIN();
+    static uint8_t colon_display[] = { 0, 0b10000000 };
+    //minutes on, hours off
+    display.setSegments(colon_display, 2, 4);
+    display.showNumberDec(setMinute, true, 2, 2);
+    COROUTINE_DELAY(100);
+    //minutes on, hours on
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    //minutes on, hours off
+    display.setSegments(colon_display, 2, 4);
+    display.showNumberDec(setMinute, true, 2, 2);
+    COROUTINE_DELAY(100);
+    //minutes on, hours on
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    //minutes on, hours off
+    display.setSegments(colon_display, 2, 4);
+    display.showNumberDec(setMinute, true, 2, 2);
+    COROUTINE_DELAY(100);
+    //minutes on, hours on
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    COROUTINE_END();
+}
+
+COROUTINE(blink_minutes) {
+    COROUTINE_BEGIN();
+    static uint8_t empty_display[] = { 0, 0 };
+    //minutes off, hours on
+    display.setSegments(empty_display, 2, 2);
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    //minutes on and hours on
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(100);
+    //minutes off, hours on
+    display.setSegments(empty_display, 2, 2);
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    //minutes on and hours on
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(100);
+     //minutes off, hours on
+    display.setSegments(empty_display, 2, 2);
+    display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
+    COROUTINE_DELAY(100);
+    //minutes on and hours on
+    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    COROUTINE_DELAY(100);
+    COROUTINE_END();
+}
+
+
+
 COROUTINE(blink_dots) {
     COROUTINE_LOOP() {
         display.showNumberDec(100 * setHour + setMinute, true);
@@ -519,17 +575,19 @@ void eye_setup() {
 
 void trigger_user() {
     currentMillis = millis();
-
     if (currentMillis - previousTriggerMillis >= 10000 && triggerFlag != 1) {
         mood = DISAPPOINTED;
         triggerFlag = 1;
-        // Serial.println(triggerFlag);
     } else {
-        blink_timer.runCoroutine();
+         if (!isMinuteSet && !isHourSet)
+            blink_minutes.runCoroutine();
+        else
+            blink_hours.runCoroutine();
     }
     if (currentMillis - previousTriggerMillis >= 14000) {
         mood = NORMAL;
-        blink_timer.reset();
+        blink_minutes.reset();
+        blink_hours.reset();
         display.setBrightness(7, true);
         display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
         triggerFlag = 0;
@@ -740,7 +798,7 @@ void loop() {
                 mood = NORMAL;
             }
             increment_minutes();
-            display.showNumberDecEx(minute, 0b01000000, true);
+            //display.showNumberDecEx(minute, 0b01000000, true);
             trigger_user();
             break;
 
@@ -799,7 +857,7 @@ void loop() {
             }
             increment_hours();
             display.setBrightness(7, true);
-            display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
+            //display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             trigger_user();
             break;
 
