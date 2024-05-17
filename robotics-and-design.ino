@@ -820,7 +820,7 @@ void loop() {
                 if ((isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
                     blink_sad.reset();
                     go_sad();
-                    phoneRemovedFinished = true;
+                    phoneRemovedFinished = false;
                     mood = SAD;
                 } else {
                     mood = HAPPY;
