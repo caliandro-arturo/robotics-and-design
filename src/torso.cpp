@@ -21,14 +21,14 @@ Torso::Torso(uint8_t bodyPin, uint16_t minMicroseconds, uint16_t maxMicroseconds
 
 void Torso::setPosition(int8_t pos) {
     uint16_t posUs = angleToUs(pos);
-    destination = position;
     start = position;
     destination = posUs;
 }
 
 void Torso::setPositionImmediate(int8_t pos) {
-    destination = start;
     position = angleToUs(pos);
+    start = position;
+    destination = position;
     torso.writeMicroseconds(position);
 }
 
@@ -50,7 +50,7 @@ Torso::~Torso() {
 }
 
 uint16_t Torso::angleToUs(int8_t angle) {
-    return map(angle, -90 + BODY_DELTA, 90 - BODY_DELTA, minMicroseconds, maxMicroseconds);
+    return map(angle, -90 + BODY_DELTA, 90 - BODY_DELTA, maxMicroseconds, minMicroseconds);
 }
 
 uint16_t Torso::speed() {
@@ -62,5 +62,5 @@ uint16_t Torso::speed() {
 }
 
 int8_t Torso::getPosition() {
-    return map(position, minMicroseconds, maxMicroseconds, -90 + BODY_DELTA, 90 - BODY_DELTA);
+    return map(position, maxMicroseconds, minMicroseconds, -90 + BODY_DELTA, 90 - BODY_DELTA);
 }
