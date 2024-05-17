@@ -666,8 +666,8 @@ void go_angry() {
     head->stop();
     arms->setPosition(LEFTARM, 60);
     arms->setPosition(RIGHTARM, 60);
-    torso->setPosition(lastHandPresence == LEFTPROX ? 80 : -80);
-    head->setPosition(lastHandPresence == LEFTPROX ? -80 : 80);
+    torso->setPosition(lastHandPresence == LEFTPROX ? -80 : 80);
+    head->setPosition(lastHandPresence == LEFTPROX ? 80 : -80);
 }
 
 /** Sets the robot as disappointed. Like the other functions, it is non-blocking. */
