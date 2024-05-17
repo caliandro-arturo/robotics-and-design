@@ -950,6 +950,8 @@ void loop() {
         case TIMER_FINISHED:
             Serial.println("Time finished!");
             num_blinks = 0;
+            hour = 0;
+            minute = 0;
             display.showNumberDecEx(0x00, 0b01000000, true);
             status = FEEDBACK_STATE;
             break;
