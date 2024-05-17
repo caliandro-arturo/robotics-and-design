@@ -26,6 +26,7 @@ volatile int encoderPos = 0;
 int oldProximity;
 bool phonePresent;
 extern power power_status;
+bool phoneRemovedFinished = 0;
 
 uint8_t currentEye[8];
 
@@ -587,8 +588,7 @@ void trigger_user() {
             else
                 blink_hours.runCoroutine();
         }
-    }
-    else{
+    } else {
         display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     }
     if (currentMillis - previousTriggerMillis >= 9000) {
@@ -817,9 +817,10 @@ void loop() {
                 happy_start_time = millis();
                 blink_timer.reset();
 
-                if (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) {
+                if ((isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
                     blink_sad.reset();
                     go_sad();
+                    phoneRemovedFinished = true;
                     mood = SAD;
                 } else {
                     mood = HAPPY;
@@ -842,6 +843,11 @@ void loop() {
             if (isMinuteSet && isHourSet) {
                 isMinuteSet = false;
                 isHourSet = false;
+                minute = 0;
+                hour = 0;
+                setHour = 0;
+                setMinute = 0;
+                reset_encoder();
                 status = IDLE;
             } else if (!isMinuteSet && !isHourSet) {
                 reset_encoder();
@@ -935,18 +941,15 @@ void loop() {
             check_phone();
             if (phonePresent)
                 status = TIMER_GOING;
-            else
-                status = IDLE;
+            else {
+                phoneRemovedFinished = true;
+                status = FEEDBACK_STATE;
+            }
             break;
 
         case TIMER_FINISHED:
             Serial.println("Time finished!");
             num_blinks = 0;
-            minute = 0;
-            hour = 0;
-            setHour = 0;
-            setMinute = 0;
-            reset_encoder();
             display.showNumberDecEx(0x00, 0b01000000, true);
             status = FEEDBACK_STATE;
             break;
