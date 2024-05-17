@@ -22,7 +22,7 @@
 
 #define BODY_MIN 550
 #define BODY_MAX 2260
-#define BODY_MIN_DELAY 800
+#define BODY_MIN_DELAY 1400
 #define BODY_MAX_DELAY 2000
 /**
  * It can happen that the servo moves less than the theoretical 180 degrees.

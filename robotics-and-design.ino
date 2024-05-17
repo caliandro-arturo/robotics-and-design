@@ -73,7 +73,7 @@ unsigned long angry_cooldown = 1000;
 
 unsigned long disappointment_start_time;
 // TODO define this
-unsigned long disappointment_duration = 3000;
+unsigned long disappointment_duration = 7000;
 
 /*
     BODY PARTS
