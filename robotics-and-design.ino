@@ -898,6 +898,7 @@ void loop() {
             if (mood != STUDY && mood != ANGRY) {
                 go_study();
                 mood = STUDY;
+                rand_licking_paw.reset();
             }
             countdown();
             check_hand();
