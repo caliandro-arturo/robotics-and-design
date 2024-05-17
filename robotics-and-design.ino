@@ -54,6 +54,7 @@ volatile Status status;
 unsigned long happy_start_time;
 // TODO define this
 unsigned long happy_duration = 2000;
+int stop = 0;
 int triggerFlag = 0;
 
 uint8_t lastHandPresence = 0;
@@ -213,7 +214,7 @@ COROUTINE(blink_minutes) {
     //minutes on and hours on
     display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
     COROUTINE_DELAY(100);
-     //minutes off, hours on
+    //minutes off, hours on
     display.setSegments(empty_display, 2, 2);
     display.showNumberDecEx(hour, 0b01000000, true, 2, 0);
     COROUTINE_DELAY(100);
@@ -579,7 +580,8 @@ void trigger_user() {
         mood = DISAPPOINTED;
         triggerFlag = 1;
     } else {
-         if (!isMinuteSet && !isHourSet)
+        stop = 1;
+        if (!isMinuteSet && !isHourSet)
             blink_minutes.runCoroutine();
         else
             blink_hours.runCoroutine();
@@ -588,6 +590,7 @@ void trigger_user() {
         mood = NORMAL;
         blink_minutes.reset();
         blink_hours.reset();
+        stop = 0;
         display.setBrightness(7, true);
         display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
         triggerFlag = 0;
@@ -798,7 +801,9 @@ void loop() {
                 mood = NORMAL;
             }
             increment_minutes();
-            //display.showNumberDecEx(minute, 0b01000000, true);
+            if (!stop) {
+                display.showNumberDecEx(minute, 0b01000000, true);
+            }
             trigger_user();
             break;
 
@@ -857,7 +862,9 @@ void loop() {
             }
             increment_hours();
             display.setBrightness(7, true);
-            //display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
+            if (!stop) {
+                display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
+            }
             trigger_user();
             break;
 
