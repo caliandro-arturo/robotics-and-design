@@ -942,6 +942,8 @@ void loop() {
             if (phonePresent)
                 status = TIMER_GOING;
             else {
+                hour = 0;
+                minute = 0;
                 phoneRemovedFinished = true;
                 status = FEEDBACK_STATE;
             }
