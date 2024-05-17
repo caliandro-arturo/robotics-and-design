@@ -576,17 +576,22 @@ void eye_setup() {
 
 void trigger_user() {
     currentMillis = millis();
-    if (currentMillis - previousTriggerMillis >= 10000 && triggerFlag != 1) {
-        mood = DISAPPOINTED;
-        triggerFlag = 1;
-    } else {
-        stop = 1;
-        if (!isMinuteSet && !isHourSet)
-            blink_minutes.runCoroutine();
-        else
-            blink_hours.runCoroutine();
+    if (currentMillis - previousTriggerMillis >= 7000) {
+        if (triggerFlag != 1) {
+            mood = DISAPPOINTED;
+            triggerFlag = 1;
+        } else {
+            stop = 1;
+            if (!isMinuteSet && !isHourSet)
+                blink_minutes.runCoroutine();
+            else
+                blink_hours.runCoroutine();
+        }
     }
-    if (currentMillis - previousTriggerMillis >= 14000) {
+    else{
+        display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    }
+    if (currentMillis - previousTriggerMillis >= 9000) {
         mood = NORMAL;
         blink_minutes.reset();
         blink_hours.reset();
