@@ -682,6 +682,7 @@ void go_disappointed() {
     arms->stop();
     head->stop();
     arms->shake(0, 30);
+    head->setPosition(0);
     head->shake(-20, 20);
     ears->setPosition(LEFTEAR, 60);
     ears->setPosition(RIGHTEAR, 60);
