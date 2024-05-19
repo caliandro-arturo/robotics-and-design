@@ -635,13 +635,12 @@ void trigger_user() {
     FULL BODY MANAGEMENT
 */
 
-/** Initializes the body parts. TODO check if the delay is needed. */
+/** Initializes the body parts. */
 void init_body_parts() {
     arms = new Arms(LEFTARM, RIGHTARM, ARMS_MIN, ARMS_MAX);
     torso = new Torso(BODYPIN, BODY_MIN, BODY_MAX);
     ears = new Ears(LEFTEAR, RIGHTEAR, EARS_MIN, EARS_MAX);
     head = new Head(HEADPIN, PETSENSOR, HEAD_MIN, HEAD_MAX);
-    delay(1000);
 }
 
 /** Sets the robot to the idle position */
@@ -654,7 +653,6 @@ void go_idle() {
     ears->setPosition(LEFTEAR, 0);
     ears->setPosition(RIGHTEAR, 0);
     head->setPosition(0);
-    delay(1000);
 }
 
 /** Sets the robot to the happy mood. Non-blocking. */
