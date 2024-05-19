@@ -384,6 +384,8 @@ uint8_t check_hand() {
 *
 */
 
+MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
+
 uint8_t SLEEPY_EYE[] = {
     0b00000000,
     0b00000000,
@@ -477,15 +479,23 @@ uint8_t DISAPPOINTED_EYE[] = {
 
 COROUTINE(blink_eyes) {
     COROUTINE_LOOP() {
-        if (mood == DISAPPOINTED) {
-            front_eyes(DISAPPOINTED_EYE);
-            COROUTINE_DELAY(100);
-        } else {
-            close_eyes();
-            COROUTINE_DELAY(50);
-            front_eyes(currentEye);
-            COROUTINE_DELAY(1500);
+        static int i = 1;
+        for (i = 1; i <= 4; i++) {
+            screen.setRow(i, 0, 1);
+            screen.setRow(8 - i + 1, 0, 1);
+            screen.setRow(i, 0, 2);
+            screen.setRow(8 - i + 1, 0, 2);
+            COROUTINE_DELAY(30);
         }
+        COROUTINE_DELAY(50);
+        for (i = 4; i >= 1; i--) {
+            screen.setRow(i, currentEye[i - 1], 1);
+            screen.setRow(8 - i + 1, currentEye[8 - i], 1);
+            screen.setRow(i, revCurrentEye[i - 1], 2);
+            screen.setRow(8 - i + 1, revCurrentEye[8 - i], 2);
+            COROUTINE_DELAY(30);
+        }
+        COROUTINE_DELAY(1500);
     }
 }
 
@@ -499,9 +509,6 @@ COROUTINE(zzz_eyes) {
         COROUTINE_DELAY(400);
     }
 }
-
-
-MATRIX7219 screen = MATRIX7219(EYE_DIN, EYE_CS, EYE_CLK, 2);
 
 
 uint8_t reverse(uint8_t b) {
@@ -548,8 +555,6 @@ void assign_eye(uint8_t EYE[8]) {
         revCurrentEye[i] = reverse(EYE[i]);
     }
 }
-
-
 
 
 COROUTINE(blink_happy) {
@@ -730,6 +735,7 @@ void assign_mood() {
     if (mood == prevMood)
         return;
     prevMood = mood;
+    blink_eyes.reset();
     switch (mood) {
         case NORMAL:
             assign_eye(FRONT_EYE);
