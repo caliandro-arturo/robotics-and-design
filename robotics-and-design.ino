@@ -970,6 +970,7 @@ void loop() {
     assign_mood();
     if (power_status == OFF) {
         go_idle();
+        delay(1000);
         shutdown();
         status = IDLE;
     }
