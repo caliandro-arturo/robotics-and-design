@@ -34,6 +34,7 @@ void power_check() {
 void shutdown() {
     // Turn off
     noInterrupts();
+    screen.clear();
     digitalWrite(EYE_CLK, LOW);
     digitalWrite(EYE_CS, LOW);
     digitalWrite(EYE_DIN, LOW);
