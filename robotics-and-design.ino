@@ -918,8 +918,8 @@ void loop() {
             check_hand();
             if (lastHandPresence != 0 && mood == STUDY) {
                 angry_start_time = millis();
-                blink_eyes.reset();
                 go_angry();
+                mp3.stop();
                 mood = ANGRY;
             }
             if (mood == ANGRY) {
