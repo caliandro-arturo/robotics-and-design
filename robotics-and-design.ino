@@ -226,8 +226,6 @@ COROUTINE(blink_minutes) {
     COROUTINE_END();
 }
 
-
-
 COROUTINE(blink_dots) {
     COROUTINE_LOOP() {
         display.showNumberDec(100 * setHour + setMinute, true);
@@ -499,6 +497,28 @@ COROUTINE(blink_eyes) {
     }
 }
 
+COROUTINE(blink_eyes_once) {
+    COROUTINE_BEGIN();
+    static int i = 1;
+    for (i = 1; i <= 4; i++) {
+        screen.setRow(i, 0, 1);
+        screen.setRow(8 - i + 1, 0, 1);
+        screen.setRow(i, 0, 2);
+        screen.setRow(8 - i + 1, 0, 2);
+        COROUTINE_DELAY(30);
+    }
+    COROUTINE_DELAY(50);
+    for (i = 4; i >= 1; i--) {
+        screen.setRow(i, currentEye[i - 1], 1);
+        screen.setRow(8 - i + 1, currentEye[8 - i], 1);
+        screen.setRow(i, revCurrentEye[i - 1], 2);
+        screen.setRow(8 - i + 1, revCurrentEye[8 - i], 2);
+        COROUTINE_DELAY(30);
+    }
+    COROUTINE_DELAY(1500);
+    COROUTINE_END();
+}
+
 COROUTINE(zzz_eyes) {
     COROUTINE_LOOP() {
         side_eyes(SLEEPY_EYE);
@@ -748,6 +768,9 @@ void assign_mood() {
             assign_eye(ANGRY_EYE);
             //mp3.play(4);
             break;
+        case HAPPY:
+            assign_eye(HAPPY_EYE);
+            break;
         case SAD:
             assign_eye(SAD_EYE);
             break;
@@ -829,24 +852,18 @@ void loop() {
             if (mood != HAPPY && mood != SAD) {
                 happy_start_time = millis();
                 blink_timer.reset();
-
+                blink_eyes_once.reset();
                 if ((isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
-                    blink_sad.reset();
                     go_sad();
                     phoneRemovedFinished = false;
                     mood = SAD;
                 } else {
                     mood = HAPPY;
                     go_happy();
-                    blink_happy.reset();
                 }
             }
             blink_timer.runCoroutine();
-
-            if (mood == SAD)
-                blink_sad.runCoroutine();
-            else
-                blink_happy.runCoroutine();
+            blink_eyes_once.runCoroutine();
 
             // Until the interaction is not expired, do not touch the status.
             if (millis() - happy_start_time <= happy_duration)
