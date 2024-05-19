@@ -37,6 +37,7 @@ void shutdown() {
     digitalWrite(EYE_CLK, LOW);
     digitalWrite(EYE_CS, LOW);
     digitalWrite(EYE_DIN, LOW);
+    display.clear();
     PCICR &= ~bit(digitalPinToPCICRbit(ENCODER_CLK));
     digitalWrite(RELAY_CTRL, HIGH);
     interrupts();
