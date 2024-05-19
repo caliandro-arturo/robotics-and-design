@@ -29,6 +29,7 @@ extern power power_status;
 bool phoneRemovedFinished = 0;
 
 uint8_t currentEye[8];
+uint8_t revCurrentEye[8];
 
 enum Mood { NORMAL,
             HAPPY,
@@ -544,6 +545,7 @@ void front_eyes(uint8_t EYE[]) {
 void assign_eye(uint8_t EYE[8]) {
     for (int i = 0; i < 8; i++) {
         currentEye[i] = EYE[i];
+        revCurrentEye[i] = reverse(EYE[i]);
     }
 }
 
