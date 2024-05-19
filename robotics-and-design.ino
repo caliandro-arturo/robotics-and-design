@@ -117,13 +117,23 @@ void check_phone() {
 DFRobotDFPlayerMini mp3;
 int current_meow = 2;
 
-/*void init_mp3() {
+enum SFX {
+    HAPPY_SFX_1 = 1,
+    HAPPY_SFX_2 = 2,
+    SAD_SFX = 3,
+    DISAPPOINTED_SFX = 5,
+    ANGRY_SFX_1 = 4,
+    ANGRY_SFX_2 = 6,
+    LICK_SFX = 7
+};
+
+void init_mp3() {
     if (!mp3.begin(Serial3)) {
         Serial.println("error");
-        while (true);
+        return;
     }
-    mp3.volume(20);
-}*/
+    mp3.volume(1);
+}
 
 
 /*
@@ -288,7 +298,6 @@ void increment_status() {
     }*/
 }
 
-
 void encoderISR() {
     int MSB = digitalRead(ENCODER_CLK);
     int LSB = digitalRead(ENCODER_DT);
@@ -317,7 +326,6 @@ ISR(PCINT0_vect) {
     encoderISR();
 }
 
-
 void clock_setup() {
     counter = 0;
     display.setBrightness(7, true);
@@ -335,12 +343,6 @@ void clock_setup() {
                                        | bit(digitalPinToPCMSKbit(ENCODER_DT))
                                        | bit(digitalPinToPCMSKbit(ENCODER_SW));
 }
-
-
-
-
-
-
 
 void countdown() {
     currentMillis = millis();
@@ -717,6 +719,7 @@ COROUTINE(rand_licking_paw) {
         arms->setPosition(random_arm, 100);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
+        mp3.play(LICK_SFX);
         COROUTINE_DELAY_SECONDS(3);
         ears->setPosition(LEFTEAR, 0);
         ears->setPosition(RIGHTEAR, 0);
@@ -744,16 +747,19 @@ void assign_mood() {
             break;
         case ANGRY:
             assign_eye(ANGRY_EYE);
-            //mp3.play(4);
+            mp3.play(ANGRY_SFX_1);
             break;
         case HAPPY:
             assign_eye(HAPPY_EYE);
+            mp3.play(HAPPY_SFX_1);
             break;
         case SAD:
             assign_eye(SAD_EYE);
+            mp3.play(SAD_SFX);
             break;
         case DISAPPOINTED:
             assign_eye(DISAPPOINTED_EYE);
+            mp3.play(DISAPPOINTED_SFX);
             break;
     }
 }
@@ -775,6 +781,7 @@ void setup() {
     assign_mood();
     clock_setup();
     eye_setup();
+    init_mp3();
     encoderPos = 0;
     pinMode(LEFTPROX, INPUT_PULLUP);
     pinMode(RIGHTPROX, INPUT_PULLUP);
@@ -786,7 +793,6 @@ void setup() {
     if (power_status == OFF) {
         shutdown();
     }
-    //init_mp3();
 }
 
 void reset_phone_check() {
