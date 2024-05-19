@@ -38,7 +38,7 @@ enum Mood { NORMAL,
             SLEEP,
             DISAPPOINTED };
 
-volatile Mood mood;
+volatile Mood mood, prevMood;
 
 enum Status { IDLE,
               START,
@@ -725,6 +725,9 @@ COROUTINE(rand_licking_paw) {
 */
 
 void assign_mood() {
+    if (mood == prevMood)
+        return;
+    prevMood = mood;
     switch (mood) {
         case NORMAL:
             assign_eye(FRONT_EYE);
@@ -758,6 +761,7 @@ void setup() {
     num_blinks = 10;
     status = IDLE;
     mood = SLEEP;
+    prevMood = NORMAL;  // Just so it is different from mood
     assign_mood();
     clock_setup();
     eye_setup();
