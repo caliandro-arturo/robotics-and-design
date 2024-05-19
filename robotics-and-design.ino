@@ -576,26 +576,6 @@ void assign_eye(uint8_t EYE[8]) {
     }
 }
 
-
-COROUTINE(blink_happy) {
-    COROUTINE_BEGIN();
-    close_eyes();
-    COROUTINE_DELAY(50);
-    front_eyes(HAPPY_EYE);
-    COROUTINE_DELAY(950);
-    COROUTINE_END();
-}
-
-COROUTINE(blink_sad) {
-    COROUTINE_BEGIN();
-    close_eyes();
-    COROUTINE_DELAY(50);
-    front_eyes(SAD_EYE);
-    COROUTINE_DELAY(950);
-    COROUTINE_END();
-}
-
-
 void eye_setup() {
     screen.begin();
     screen.setBrightness(1);
