@@ -65,16 +65,16 @@ unsigned long angry_last_hand_detection_time;
 /** Amount of time after which the robot surrends and let the user take the phone
  * TODO define this.
 */
-unsigned long angry_threshold = 5000;
+unsigned long angry_threshold = 8000;
 /** Amount of time between a hand detection and the moment in which the robot will
  * go back to the study mood.
  * TODO define this
 */
-unsigned long angry_cooldown = 1000;
+unsigned long angry_cooldown = 2000;
 
 unsigned long disappointment_start_time;
 // TODO define this
-unsigned long disappointment_duration = 7000;
+unsigned long disappointment_duration = 5000;
 
 /*
     BODY PARTS
