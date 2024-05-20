@@ -1,6 +1,13 @@
 # Robotics and Design
 
-This is the repo. Nice.
+Firmware for the robot that has been designed as a project for the
+Robotics and Design course at Politecnico di Milano during the A.Y.
+2023/2024.
+
+## Board
+
+Arduino Mega 2560, but it should work on any AVR architecture that can host enough pins to be populated by the components described in
+`src/pins.hpp`.
 
 ## Used libraries
 
@@ -9,3 +16,16 @@ This is the repo. Nice.
 - [MATRIX7219](https://github.com/RobTillaart/MATRIX7219)
 - [Servo](https://github.com/arduino-libraries/Servo)
 - [TM1637](https://github.com/avishorp/TM1637)
+
+## Project layout
+
+- Any servo motor component is implemented as a class in the `src` folder;
+- Power management, servo motor parameters and the pin configuration are in
+respective sources and/or headers in the `src` folder;
+- The other components, as well as the program logic, are directly
+implemented in the `robotics-and-design.ino` source file.
+
+## Authors
+
+[Arturo Caliandro](https://github.com/caliandro-arturo) \
+[Valentina Scorza](https://github.com/valentinascorza)
