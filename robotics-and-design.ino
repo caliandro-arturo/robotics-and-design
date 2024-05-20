@@ -748,7 +748,7 @@ COROUTINE(rand_licking_paw) {
         arms->setPosition(random_arm, 100);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
-        //mp3.play(LICK_SFX);
+        mp3.play(LICK_SFX);
         COROUTINE_DELAY(500);
         sense_hands = true;
         COROUTINE_DELAY(2500);
@@ -781,19 +781,19 @@ void assign_mood() {
             break;
         case ANGRY:
             assign_eye(ANGRY_EYE);
-            //mp3.play(ANGRY_SFX_1);
+            mp3.play(ANGRY_SFX_1);
             break;
         case HAPPY:
             assign_eye(HAPPY_EYE);
-            //mp3.play(PRR_SFX);
+            mp3.play(PRR_SFX);
             break;
         case SAD:
             assign_eye(SAD_EYE);
-            //mp3.play(SAD_SFX);
+            mp3.play(SAD_SFX);
             break;
         case DISAPPOINTED:
             assign_eye(DISAPPOINTED_EYE);
-            //mp3.play(DISAPPOINTED_SFX);
+            mp3.play(DISAPPOINTED_SFX);
             break;
     }
 }
@@ -815,7 +815,7 @@ void setup() {
     assign_mood();
     clock_setup();
     eye_setup();
-    //init_mp3();
+    init_mp3();
     encoderPos = 0;
     pinMode(LEFTPROX, INPUT_PULLUP);
     pinMode(RIGHTPROX, INPUT_PULLUP);
@@ -872,6 +872,11 @@ void loop() {
             increment_minutes();
             if (!stop) {
                 display.showNumberDecEx(minute, 0b01000000, true);
+            }
+            check_phone();
+            if (!phonePresent) {
+                phoneRemovedFinished = true;
+                status = TIMER_FINISHED;
             }
             check_interaction();
             trigger_user();
@@ -939,6 +944,11 @@ void loop() {
             if (!stop) {
                 display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             }
+            check_phone();
+            if (!phonePresent) {
+                phoneRemovedFinished = true;
+                status = TIMER_FINISHED;
+            }
             check_interaction();
             trigger_user();
             break;
@@ -975,7 +985,7 @@ void loop() {
                 angry_start_time = millis();
                 rand_licking_paw.reset();
                 go_angry();
-                //mp3.stop();
+                mp3.stop();
                 mood = ANGRY;
             }
             if (mood == ANGRY) {
@@ -1007,10 +1017,12 @@ void loop() {
             if (!phonePresent) {
                 phoneRemovedFinished = true;
                 status = TIMER_FINISHED;
-            } else if (phonePresent && oldCountPhoneIn != countPhoneIn) {
+            } else if (phonePresent && oldCountPhoneIn > countPhoneIn) {
                 oldCountPhoneIn = countPhoneIn;
                 previousStatus = TIMER_GOING;
                 status = FEEDBACK_STATE;
+            } else if (phonePresent && oldCountPhoneIn < countPhoneIn) {
+                oldCountPhoneIn = countPhoneIn;
             }
             break;
 
