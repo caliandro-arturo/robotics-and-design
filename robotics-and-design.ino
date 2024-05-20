@@ -289,13 +289,6 @@ void increment_minutes() {
 void increment_status() {
     if (status == SET_MINUTES || status == SET_HOURS)
         status = FEEDBACK_STATE;
-    /* else if (status == SET_HOURS) {
-        if (100 * hour + setMinute <= 30) {
-            status = SAD_STATE;
-        } else {
-            status = FEEDBACK_STATE;
-        }
-    }*/
 }
 
 void encoderISR() {
@@ -813,6 +806,7 @@ void loop() {
             check_phone();
             if (phonePresent == true) {
                 display.setBrightness(7, true);
+                reset_encoder();
                 increment_minutes();
                 display.showNumberDecEx(minute, 0b01000000, true);
                 previousTriggerMillis = millis();
