@@ -65,26 +65,33 @@ int stop = 0;
 int triggerFlag = 0;
 int countPhoneIn = 0;
 int oldCountPhoneIn = 0;
-uint8_t lastHandPresence = 0;
-bool sense_hands = true;
-unsigned long angry_start_time;
-unsigned long angry_start_rotation;
-unsigned long angry_last_hand_detection_time = 0;
-/** Amount of time after which the robot surrends and let the user take the phone
- * TODO define this.
-*/
-unsigned long angry_threshold = 8000;
-/** Amount of time between a hand detection and the moment in which the robot will
- * go back to the study mood.
- * TODO define this
-*/
-unsigned long angry_cooldown = 2000;
-unsigned long angry_relax = 1000;
-unsigned long angry_rotation_duration = 1500;
 
+/* Indicates the last proximity sensor that detected an hand, `0` if none */
+uint8_t lastHandPresence = 0;
+/* Inhibits the proximity sensors if false. */
+bool sense_hands = true;
+/* The time when the last angry reaction occurred. */
+unsigned long angry_start_time;
+/* The time since the last rotation did start. */
+unsigned long angry_start_rotation;
+/* The last time an hand has been detected within the angry reaction. */
+unsigned long angry_last_hand_detection_time = 0;
+/* Amount of time after which the robot surrends and let the user take the phone. */
+const unsigned long angry_threshold = 8000;
+/* Amount of time between a hand detection and the moment in which the robot will
+ * go back to the study mood.
+ */
+const unsigned long angry_cooldown = 2000;
+/* Amount of time that must elapse before a new angry reaction can occurr. */
+const unsigned long angry_relax = 1000;
+/* Duration of a full torso rotation, plus some delay to ensure that the
+ * rotation has been completed.
+ */
+const unsigned long angry_rotation_duration = 1500;
+/* The time when the last disappointment mood occurred. */
 unsigned long disappointment_start_time;
-// TODO define this
-unsigned long disappointment_duration = 5000;
+/* Duration of the disapointment reaction. */
+const unsigned long disappointment_duration = 5000;
 
 /*
     BODY PARTS
@@ -681,8 +688,8 @@ void go_sad() {
     ears->setPosition(RIGHTEAR, 90);
 }
 
-/** Sets the robot in the study phase, that is the normal state, plus
- * random licking a paw.
+/** Sets the robot in the study phase, that is the normal state, but with
+ * the difference that the torso rotates at a slower speed. Non-blocking.
 */
 void go_study() {
     arms->stop();
@@ -735,7 +742,7 @@ COROUTINE(rand_head) {
 }
 
 /** Makes the cat lick a random paw.
- * TODO calibrate head-paw reciprocal position
+ * TODO reduce frequency
 */
 COROUTINE(rand_licking_paw) {
     COROUTINE_LOOP() {

@@ -26,15 +26,19 @@ class Head : public Coroutine {
 
         /** Moves the head to the selected position.
          *
-         * @param pos   the position to reach (in degrees)
+         * @param pos       the position to reach (in degrees)
+         * @param immediate if the position should be reached as soon as possible
         */
         void setPosition(int8_t pos, bool immediate = true);
 
         /** Shakes the head at the maximum speed.
-         * The movement should be interrupted manually.
+         * The movement should be interrupted manually, unless the last
+         * parameter is set to true. This is a workaround to use the same
+         * coroutine for simple movements.
          *
-         * @param from  the starting angle (in degrees)
-         * @param to    the ending angle (in degrees)
+         * @param from              the starting angle (in degrees)
+         * @param to                the ending angle (in degrees)
+         * @param oneMovementOnly   if the movement should only occurr once
         */
         void shake(int8_t from, int8_t to, bool oneMovementOnly = false);
 
