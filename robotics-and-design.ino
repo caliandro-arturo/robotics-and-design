@@ -63,6 +63,7 @@ int triggerFlag = 0;
 int countPhoneIn = 0;
 int oldCountPhoneIn = 0;
 uint8_t lastHandPresence = 0;
+bool sense_hands = true;
 unsigned long angry_start_time;
 unsigned long angry_last_hand_detection_time;
 /** Amount of time after which the robot surrends and let the user take the phone
@@ -377,7 +378,11 @@ void countdown() {
     }
 }
 
-uint8_t check_hand() {
+void check_hand() {
+    if (sense_hands == false) {
+        lastHandPresence = 0;
+        return;
+    }
     if (digitalRead(LEFTPROX) == LOW) {
         lastHandPresence = LEFTPROX;
     } else if (digitalRead(RIGHTPROX) == LOW) {
@@ -724,18 +729,24 @@ COROUTINE(rand_licking_paw) {
         static uint8_t other_arm;
         random_arm = random(2) ? LEFTARM : RIGHTARM;
         other_arm = random_arm == LEFTARM ? RIGHTARM : LEFTARM;
+        sense_hands = false;
         ears->setPosition(LEFTEAR, 45);
         ears->setPosition(RIGHTEAR, 45);
         arms->setPosition(random_arm, 100);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
         mp3.play(LICK_SFX);
-        COROUTINE_DELAY_SECONDS(3);
+        COROUTINE_DELAY(500);
+        sense_hands = true;
+        COROUTINE_DELAY(2500);
+        sense_hands = false;
         ears->setPosition(LEFTEAR, 0);
         ears->setPosition(RIGHTEAR, 0);
         arms->setPosition(random_arm, 0);
         arms->setPosition(other_arm, 0);
         head->setPosition(0);
+        COROUTINE_DELAY(500);
+        sense_hands = true;
     }
 }
 
