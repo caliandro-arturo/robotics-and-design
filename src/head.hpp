@@ -28,7 +28,7 @@ class Head : public Coroutine {
          *
          * @param pos   the position to reach (in degrees)
         */
-        void setPosition(int8_t pos);
+        void setPosition(int8_t pos, bool immediate = true);
 
         /** Shakes the head at the maximum speed.
          * The movement should be interrupted manually.
@@ -36,7 +36,7 @@ class Head : public Coroutine {
          * @param from  the starting angle (in degrees)
          * @param to    the ending angle (in degrees)
         */
-        void shake(int8_t from, int8_t to);
+        void shake(int8_t from, int8_t to, bool oneMovementOnly = false);
 
         /** Stops any movement occurring to the head. */
         void stop();

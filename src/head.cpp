@@ -11,6 +11,8 @@ template<typename T> void swap(T &a, T &b) {
     a ^= b;
 }
 
+bool oneMovementOnly;
+
 Head::Head(uint8_t headPin,
            uint8_t petSensorPin,
            uint16_t minMicroseconds,
@@ -27,19 +29,26 @@ Head::Head(uint8_t headPin,
     head.write(position);
 }
 
-void Head::setPosition(int8_t pos) {
+void Head::setPosition(int8_t pos, bool immediate = true) {
     stop();
-    from = pos + 90;
     to = pos + 90;
-    position = pos + 90;
-    head.write(position);
+    if (immediate) {
+        from = pos + 90;
+        position = pos + 90;
+        head.write(position);
+    } else {
+        oneMovementOnly = true;
+        shake(position - 90, pos, true);
+    }
+
 }
 
-void Head::shake(int8_t from, int8_t to) {
+void Head::shake(int8_t from, int8_t to, bool oneMovementOnly = false) {
+    ::oneMovementOnly = oneMovementOnly;
     stop();
     from += 90;
     to += 90;
-    if (from > to) {
+    if (from > to && !oneMovementOnly) {
         swap(from, to);
     }
     int8_t &nearest = (abs((int)(from - position)) < abs((int)(to - position))) ? from : to;
@@ -67,8 +76,14 @@ int Head::runCoroutine() {
         COROUTINE_AWAIT(canMove);
         position += (from < to) ? 1 : -1;
         head.write(position);
-        if (position == to)
-            swap(from, to);
+        if (position == to) {
+            if (oneMovementOnly == true) {
+                canMove = false;
+                oneMovementOnly = false;
+            } else {
+                swap(from, to);
+            }
+        }
         COROUTINE_DELAY_MICROS(minDelay * 10);  // One degree is almost 10 microseconds
     }
 }
