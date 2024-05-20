@@ -1072,4 +1072,3 @@ void loop() {
 
     update_body();
 }
-//missing cases:1) waited too much while setting the timer 2) forgot phone in, timer ended
