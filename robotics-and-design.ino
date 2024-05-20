@@ -903,6 +903,7 @@ void loop() {
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 isHourSet = true;
+                previousNoInteraction = millis();
                 status = PHONE_CHECK;
             }
             break;
@@ -924,7 +925,6 @@ void loop() {
         case PHONE_CHECK:
             if (mood != NORMAL) {
                 go_idle();
-                previousNoInteraction = millis();
                 mood = NORMAL;
             }
             display.setBrightness(7, true);
