@@ -916,6 +916,13 @@ void loop() {
                 mp3.stop();
                 mood = ANGRY;
             }
+            check_phone();
+            if (phonePresent)
+                status = TIMER_GOING;
+            else {
+                phoneRemovedFinished = true;
+                status = TIMER_FINISHED;
+            }
             if (mood == ANGRY) {
                 if (lastHandPresence != 0) {
                     angry_last_hand_detection_time = millis();
