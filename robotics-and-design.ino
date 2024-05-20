@@ -57,7 +57,7 @@ Status previousStatus;
 
 unsigned long happy_start_time;
 // TODO define this
-unsigned long happy_duration = 2000;
+unsigned long happy_duration = 3000;
 int stop = 0;
 int triggerFlag = 0;
 int countPhoneIn = 0;
@@ -124,13 +124,17 @@ DFRobotDFPlayerMini mp3;
 int current_meow = 2;
 
 enum SFX {
-    PRR_SFX = 1,
-    HAPPY_SFX = 2,
-    SAD_SFX = 3,
-    DISAPPOINTED_SFX = 5,
-    ANGRY_SFX_1 = 4,
-    ANGRY_SFX_2 = 6,
-    LICK_SFX = 7
+    PRR_SFX = 7,
+    HAPPY_SFX = 1,
+    SAD_SFX = 2,
+    DISAPPOINTED_SFX = 5,  // giusto 4 ma metto angry2
+    ANGRY_SFX_1 = 3,       //ok
+    ANGRY_SFX_2 = 5,
+    LICK_SFX = 6  //ok
+
+    //1 happy 1
+    //4 disapp
+    // 5 angry 2
 };
 
 void init_mp3() {
@@ -295,9 +299,11 @@ void increment_minutes() {
 void increment_status() {
     if (status == SET_MINUTES) {
         previousStatus = SET_MINUTES;
+        Serial.println("non va");
         status = FEEDBACK_STATE;
     } else if (status == SET_HOURS) {
         previousStatus = SET_HOURS;
+        Serial.println("non va2");
         status = FEEDBACK_STATE;
     }
 }
@@ -929,6 +935,7 @@ void loop() {
                 angry_start_time = millis();
                 go_angry();
                 mp3.stop();
+
                 mood = ANGRY;
             }
             if (mood == ANGRY) {
