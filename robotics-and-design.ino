@@ -53,12 +53,15 @@ enum Status { IDLE,
 
 volatile Status status;
 
+Status previousStatus;
+
 unsigned long happy_start_time;
 // TODO define this
 unsigned long happy_duration = 2000;
 int stop = 0;
 int triggerFlag = 0;
-
+int countPhoneIn = 0;
+int oldCountPhoneIn = 0;
 uint8_t lastHandPresence = 0;
 unsigned long angry_start_time;
 unsigned long angry_last_hand_detection_time;
@@ -102,10 +105,13 @@ void init_phone_slots() {
 
 //may be the opposite
 void check_phone() {
-    if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH)  //detected
+    if (digitalRead(SLOT0) == HIGH || digitalRead(SLOT1) == HIGH || digitalRead(SLOT2) == HIGH || digitalRead(SLOT3) == HIGH) {
+        countPhoneIn = digitalRead(SLOT0) + digitalRead(SLOT1) + digitalRead(SLOT2) + digitalRead(SLOT3);
         phonePresent = true;
-    else
+    } else {
+        countPhoneIn = 0;
         phonePresent = false;
+    }
 }
 
 /*
@@ -287,8 +293,13 @@ void increment_minutes() {
 }
 
 void increment_status() {
-    if (status == SET_MINUTES || status == SET_HOURS)
+    if (status == SET_MINUTES) {
+        previousStatus = SET_MINUTES;
         status = FEEDBACK_STATE;
+    } else if (status == SET_HOURS) {
+        previousStatus = SET_HOURS;
+        status = FEEDBACK_STATE;
+    }
 }
 
 void encoderISR() {
@@ -831,7 +842,7 @@ void loop() {
                 happy_start_time = millis();
                 blink_timer.reset();
                 blink_eyes_once.reset();
-                if ((isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
+                if ((previousStatus == TIMER_GOING) || (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
                     go_sad();
                     phoneRemovedFinished = false;
                     mood = SAD;
@@ -848,7 +859,7 @@ void loop() {
                 break;
             happy_stop();
             // Select the new state
-            if (isMinuteSet && isHourSet) {
+            if (previousStatus == TIMER_FINISHED) {
                 isMinuteSet = false;
                 isHourSet = false;
                 minute = 0;
@@ -857,7 +868,9 @@ void loop() {
                 setMinute = 0;
                 reset_encoder();
                 status = IDLE;
-            } else if (!isMinuteSet && !isHourSet) {
+            } else if (previousStatus == TIMER_GOING) {
+                status = TIMER_GOING;
+            } else if (previousStatus == SET_MINUTES) {
                 reset_encoder();
                 Serial.println("Minutes set");
                 isMinuteSet = true;
@@ -865,7 +878,7 @@ void loop() {
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 previousTriggerMillis = millis();
                 status = SET_HOURS;
-            } else if (isMinuteSet == 1 && isHourSet == 0) {
+            } else if (previousStatus == SET_HOURS) {
                 Serial.println("Hours set");
                 setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
@@ -895,6 +908,7 @@ void loop() {
             display.setBrightness(7, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
+            oldCountPhoneIn = countPhoneIn;
             if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
                 Serial.println("Timer starts!");
                 status = TIMER_GOING;
@@ -909,19 +923,13 @@ void loop() {
                 rand_licking_paw.reset();
             }
             countdown();
+
             check_hand();
             if (lastHandPresence != 0 && mood == STUDY) {
                 angry_start_time = millis();
                 go_angry();
                 mp3.stop();
                 mood = ANGRY;
-            }
-            check_phone();
-            if (phonePresent)
-                status = TIMER_GOING;
-            else {
-                phoneRemovedFinished = true;
-                status = TIMER_FINISHED;
             }
             if (mood == ANGRY) {
                 if (lastHandPresence != 0) {
@@ -942,6 +950,16 @@ void loop() {
                 }
             } else {
                 rand_licking_paw.runCoroutine();
+            }
+
+            check_phone();
+            if (!phonePresent) {
+                phoneRemovedFinished = true;
+                status = TIMER_FINISHED;
+            } else if (phonePresent && oldCountPhoneIn != countPhoneIn) {
+                oldCountPhoneIn = countPhoneIn;
+                previousStatus = TIMER_GOING;
+                status = FEEDBACK_STATE;
             }
             break;
 
@@ -969,6 +987,7 @@ void loop() {
             hour = 0;
             minute = 0;
             display.showNumberDecEx(0x00, 0b01000000, true);
+            previousStatus = TIMER_FINISHED;
             status = FEEDBACK_STATE;
             break;
     }
