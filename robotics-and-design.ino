@@ -65,7 +65,7 @@ int oldCountPhoneIn = 0;
 uint8_t lastHandPresence = 0;
 bool sense_hands = true;
 unsigned long angry_start_time;
-unsigned long angry_last_hand_detection_time;
+unsigned long angry_last_hand_detection_time = 0;
 /** Amount of time after which the robot surrends and let the user take the phone
  * TODO define this.
 */
@@ -75,6 +75,7 @@ unsigned long angry_threshold = 8000;
  * TODO define this
 */
 unsigned long angry_cooldown = 2000;
+unsigned long angry_relax = 1000;
 
 unsigned long disappointment_start_time;
 // TODO define this
@@ -942,11 +943,12 @@ void loop() {
             countdown();
 
             check_hand();
-            if (lastHandPresence != 0 && mood == STUDY) {
+            if (lastHandPresence != 0 && mood == STUDY && millis() - angry_last_hand_detection_time >= angry_relax) {
+                angry_start_rotation = millis();
                 angry_start_time = millis();
+                rand_licking_paw.reset();
                 go_angry();
                 mp3.stop();
-
                 mood = ANGRY;
             }
             if (mood == ANGRY) {
@@ -963,6 +965,7 @@ void loop() {
                     }
                 } else if (millis() - angry_last_hand_detection_time >= angry_cooldown) {
                     // No detection inside the cooldown interval, reset
+                    angry_last_hand_detection_time = millis();
                     go_study();
                     mood = STUDY;
                 }
