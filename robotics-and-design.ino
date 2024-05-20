@@ -118,8 +118,8 @@ DFRobotDFPlayerMini mp3;
 int current_meow = 2;
 
 enum SFX {
-    HAPPY_SFX_1 = 1,
-    HAPPY_SFX_2 = 2,
+    PRR_SFX = 1,
+    HAPPY_SFX = 2,
     SAD_SFX = 3,
     DISAPPOINTED_SFX = 5,
     ANGRY_SFX_1 = 4,
@@ -744,7 +744,7 @@ void assign_mood() {
             break;
         case HAPPY:
             assign_eye(HAPPY_EYE);
-            mp3.play(HAPPY_SFX_1);
+            mp3.play(PRR_SFX);
             break;
         case SAD:
             assign_eye(SAD_EYE);
