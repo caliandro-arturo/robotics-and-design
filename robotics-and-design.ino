@@ -933,7 +933,7 @@ void loop() {
             oldCountPhoneIn = countPhoneIn;
             if (!phonePresent) {
                 check_interaction();
-            } else if (phonePresent == true && isMinuteSet == 1 && isHourSet == 1) {
+            } else {
                 Serial.println("Timer starts!");
                 status = TIMER_GOING;
                 previousMillis = millis();
