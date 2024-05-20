@@ -56,9 +56,11 @@ volatile Status status;
 Status previousStatus;
 unsigned long currentNoInteraction;
 unsigned long previousNoInteraction;
-unsigned long happy_start_time;
-// TODO define this
-unsigned long happy_duration = 3000;
+/* The time when the last feedback reaction occurred. */
+unsigned long feedback_start_time;
+/* Duration of the feedback reaction. */
+const unsigned long feedback_duration = 3000;
+
 int stop = 0;
 int triggerFlag = 0;
 int countPhoneIn = 0;
@@ -884,7 +886,7 @@ void loop() {
 
         case FEEDBACK_STATE:
             if (mood != HAPPY && mood != SAD) {
-                happy_start_time = millis();
+                feedback_start_time = millis();
                 blink_timer.reset();
                 blink_eyes_once.reset();
                 if ((previousStatus == TIMER_GOING) || (isMinuteSet == 1 && isHourSet == 0 && 100 * hour + setMinute <= 30) || (phoneRemovedFinished)) {
@@ -900,7 +902,7 @@ void loop() {
             blink_eyes_once.runCoroutine();
 
             // Until the interaction is not expired, do not touch the status.
-            if (millis() - happy_start_time <= happy_duration)
+            if (millis() - feedback_start_time <= feedback_duration)
                 break;
             happy_stop();
             // Select the new state
