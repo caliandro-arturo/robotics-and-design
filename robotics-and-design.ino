@@ -64,8 +64,10 @@ int triggerFlag = 0;
 int countPhoneIn = 0;
 int oldCountPhoneIn = 0;
 uint8_t lastHandPresence = 0;
+bool sense_hands = true;
 unsigned long angry_start_time;
-unsigned long angry_last_hand_detection_time;
+unsigned long angry_start_rotation;
+unsigned long angry_last_hand_detection_time = 0;
 /** Amount of time after which the robot surrends and let the user take the phone
  * TODO define this.
 */
@@ -75,6 +77,8 @@ unsigned long angry_threshold = 8000;
  * TODO define this
 */
 unsigned long angry_cooldown = 2000;
+unsigned long angry_relax = 1000;
+unsigned long angry_rotation_duration = 1500;
 
 unsigned long disappointment_start_time;
 // TODO define this
@@ -380,7 +384,11 @@ void countdown() {
     }
 }
 
-uint8_t check_hand() {
+void check_hand() {
+    if (sense_hands == false) {
+        lastHandPresence = 0;
+        return;
+    }
     if (digitalRead(LEFTPROX) == LOW) {
         lastHandPresence = LEFTPROX;
     } else if (digitalRead(RIGHTPROX) == LOW) {
@@ -675,7 +683,14 @@ void go_sad() {
  * random licking a paw.
 */
 void go_study() {
-    go_idle();
+    arms->stop();
+    head->stop();
+    arms->setPosition(LEFTARM, 0);
+    arms->setPosition(RIGHTARM, 0);
+    torso->setPosition(0);
+    ears->setPosition(LEFTEAR, 0);
+    ears->setPosition(RIGHTEAR, 0);
+    head->setPosition(0);
 }
 
 /** Initializes the anger of the robot. It is an initial setup, to call
@@ -687,7 +702,7 @@ void go_angry() {
     arms->setPosition(LEFTARM, 60);
     arms->setPosition(RIGHTARM, 60);
     torso->setPosition(lastHandPresence == LEFTPROX ? -80 : 80);
-    head->setPosition(lastHandPresence == LEFTPROX ? 80 : -80);
+    head->setPosition(lastHandPresence == LEFTPROX ? 80 : -80, false);
 }
 
 /** Sets the robot as disappointed. Like the other functions, it is non-blocking. */
@@ -727,18 +742,24 @@ COROUTINE(rand_licking_paw) {
         static uint8_t other_arm;
         random_arm = random(2) ? LEFTARM : RIGHTARM;
         other_arm = random_arm == LEFTARM ? RIGHTARM : LEFTARM;
+        sense_hands = false;
         ears->setPosition(LEFTEAR, 45);
         ears->setPosition(RIGHTEAR, 45);
         arms->setPosition(random_arm, 100);
         arms->setPosition(other_arm, 45);
         head->setPosition(random_arm == LEFTARM ? 30 : -30);
         mp3.play(LICK_SFX);
-        COROUTINE_DELAY_SECONDS(3);
+        COROUTINE_DELAY(500);
+        sense_hands = true;
+        COROUTINE_DELAY(2500);
+        sense_hands = false;
         ears->setPosition(LEFTEAR, 0);
         ears->setPosition(RIGHTEAR, 0);
         arms->setPosition(random_arm, 0);
         arms->setPosition(other_arm, 0);
         head->setPosition(0);
+        COROUTINE_DELAY(500);
+        sense_hands = true;
     }
 }
 
@@ -949,11 +970,12 @@ void loop() {
             countdown();
 
             check_hand();
-            if (lastHandPresence != 0 && mood == STUDY) {
+            if (lastHandPresence != 0 && mood == STUDY && millis() - angry_last_hand_detection_time >= angry_relax) {
+                angry_start_rotation = millis();
                 angry_start_time = millis();
+                rand_licking_paw.reset();
                 go_angry();
                 mp3.stop();
-
                 mood = ANGRY;
             }
             if (mood == ANGRY) {
@@ -963,13 +985,17 @@ void loop() {
                         // The attempt to rescue the phone lasted too long, giving up
                         status = RELEASE_PHONE;
                     } else if (!torso->isMoving()) {
-                        // Torso reached the extreme, going to the other side
-                        int8_t new_position = torso->getPosition() > 0 ? -80 : 80;
-                        torso->setPosition(new_position);
-                        head->setPosition(-new_position);
+                        if (millis() - angry_start_rotation >= angry_rotation_duration) {
+                            // Torso reached the extreme, going to the other side
+                            angry_start_rotation = millis();
+                            int8_t new_position = torso->getPosition() > 0 ? -80 : 80;
+                            torso->setPosition(new_position);
+                            head->setPosition(-new_position, false);
+                        }
                     }
                 } else if (millis() - angry_last_hand_detection_time >= angry_cooldown) {
                     // No detection inside the cooldown interval, reset
+                    angry_last_hand_detection_time = millis();
                     go_study();
                     mood = STUDY;
                 }

@@ -22,8 +22,8 @@
 
 #define BODY_MIN 550
 #define BODY_MAX 2260
-#define BODY_MIN_DELAY 1400
-#define BODY_MAX_DELAY 2000
+#define BODY_MIN_DELAY 500
+#define BODY_MAX_DELAY 500
 /**
  * It can happen that the servo moves less than the theoretical 180 degrees.
  * It is possible to restrict the maximum distance from the central position
@@ -47,7 +47,9 @@
 
 #define HEAD_MIN 500
 #define HEAD_MAX 2400
-#define HEAD_MIN_DELAY 600
-#define HEAD_MAX_DELAY 2000
+//#define HEAD_MIN_DELAY 600
+//#define HEAD_MAX_DELAY 2000
+#define HEAD_MIN_DELAY 500
+#define HEAD_MAX_DELAY 500
 
 #endif
