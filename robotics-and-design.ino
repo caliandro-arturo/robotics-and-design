@@ -678,7 +678,14 @@ void go_sad() {
  * random licking a paw.
 */
 void go_study() {
-    go_idle();
+    arms->stop();
+    head->stop();
+    arms->setPosition(LEFTARM, 0);
+    arms->setPosition(RIGHTARM, 0);
+    torso->setPosition(0);
+    ears->setPosition(LEFTEAR, 0);
+    ears->setPosition(RIGHTEAR, 0);
+    head->setPosition(0);
 }
 
 /** Initializes the anger of the robot. It is an initial setup, to call
