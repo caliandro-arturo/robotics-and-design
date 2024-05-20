@@ -78,8 +78,8 @@ unsigned long angry_start_rotation;
 unsigned long angry_last_hand_detection_time = 0;
 /* Amount of time after which the robot surrends and let the user take the phone. */
 const unsigned long angry_threshold = 8000;
-/* Amount of time between a hand detection and the moment in which the robot will
- * go back to the study mood.
+/* Amount of time that must pass without any hand detection for the robot
+ * to go back to a neutral from being angry.
  */
 const unsigned long angry_cooldown = 2000;
 /* Amount of time that must elapse before a new angry reaction can occurr. */
