@@ -1040,6 +1040,9 @@ void loop() {
                 status = TIMER_GOING;
             else {
                 phoneRemovedFinished = true;
+                arms->stop();
+                arms->setPosition(LEFTARM, 0);
+                arms->setPosition(RIGHTARM, 0);
                 status = TIMER_FINISHED;
             }
             break;
