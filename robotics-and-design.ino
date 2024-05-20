@@ -54,7 +54,8 @@ enum Status { IDLE,
 volatile Status status;
 
 Status previousStatus;
-
+unsigned long currentNoInteraction;
+unsigned long previousNoInteraction;
 unsigned long happy_start_time;
 // TODO define this
 unsigned long happy_duration = 3000;
@@ -322,6 +323,8 @@ void encoderISR() {
     }
     if (!triggerFlag)
         previousTriggerMillis = millis();
+    if (status == SET_MINUTES || status == SET_HOURS)
+        previousNoInteraction = millis();
     lastEncoded = encoded;
 }
 
@@ -809,6 +812,14 @@ void reset_phone_check() {
     phonePresent = false;
 }
 
+void check_interaction() {
+    currentNoInteraction = millis();
+    if (currentNoInteraction - previousNoInteraction >= 180000) {
+        phoneRemovedFinished = true;
+        status = TIMER_FINISHED;
+    }
+}
+
 
 void loop() {
     switch (status) {
@@ -827,6 +838,7 @@ void loop() {
                 increment_minutes();
                 display.showNumberDecEx(minute, 0b01000000, true);
                 previousTriggerMillis = millis();
+                previousNoInteraction = millis();
                 status = SET_MINUTES;
             }
             break;
@@ -840,6 +852,7 @@ void loop() {
             if (!stop) {
                 display.showNumberDecEx(minute, 0b01000000, true);
             }
+            check_interaction();
             trigger_user();
             break;
 
@@ -883,6 +896,7 @@ void loop() {
                 setMinute = minute;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 previousTriggerMillis = millis();
+                previousNoInteraction = millis();
                 status = SET_HOURS;
             } else if (previousStatus == SET_HOURS) {
                 Serial.println("Hours set");
@@ -903,19 +917,23 @@ void loop() {
             if (!stop) {
                 display.showNumberDecEx(100 * hour + setMinute, 0b01000000, true);
             }
+            check_interaction();
             trigger_user();
             break;
 
         case PHONE_CHECK:
             if (mood != NORMAL) {
                 go_idle();
+                previousNoInteraction = millis();
                 mood = NORMAL;
             }
             display.setBrightness(7, true);
             display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
             check_phone();
             oldCountPhoneIn = countPhoneIn;
-            if (phonePresent == true & isMinuteSet == 1 && isHourSet == 1) {
+            if (!phonePresent) {
+                check_interaction();
+            } else if (phonePresent == true && isMinuteSet == 1 && isHourSet == 1) {
                 Serial.println("Timer starts!");
                 status = TIMER_GOING;
                 previousMillis = millis();
