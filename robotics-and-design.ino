@@ -78,21 +78,21 @@ unsigned long angry_start_rotation;
 /* The last time an hand has been detected within the angry reaction. */
 unsigned long angry_last_hand_detection_time = 0;
 /* Amount of time after which the robot surrends and let the user take the phone. */
-const unsigned long angry_threshold = 8000;
+const unsigned long angry_threshold = 4000;
 /* Amount of time that must pass without any hand detection for the robot
  * to go back to a neutral from being angry.
  */
-const unsigned long angry_cooldown = 2000;
+const unsigned long angry_cooldown = 1000;
 /* Amount of time that must elapse before a new angry reaction can occurr. */
 const unsigned long angry_relax = 1000;
 /* Duration of a full torso rotation, plus some delay to ensure that the
  * rotation has been completed.
  */
-const unsigned long angry_rotation_duration = 1500;
+const unsigned long angry_rotation_duration = 1000;
 /* The time when the last disappointment mood occurred. */
 unsigned long disappointment_start_time;
 /* Duration of the disapointment reaction. */
-const unsigned long disappointment_duration = 5000;
+const unsigned long disappointment_duration = 2000;
 
 /*
     BODY PARTS
