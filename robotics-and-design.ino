@@ -34,6 +34,7 @@ uint8_t revCurrentEye[8];
 enum Mood { NORMAL,
             HAPPY,
             SAD,
+            LICKING,
             ANGRY,
             STUDY,
             SLEEP,
@@ -492,6 +493,17 @@ uint8_t HAPPY_EYE[] = {
     0b00000000
 };
 
+uint8_t LICKING_EYE[] = {
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b01111110,
+    0b01111110,
+    0b11000011,
+    0b10000001,
+    0b00000000
+};
+
 uint8_t DISAPPOINTED_EYE[] = {
     0b00000000,
     0b00000000,
@@ -743,6 +755,8 @@ COROUTINE(rand_head) {
 COROUTINE(rand_licking_paw) {
     COROUTINE_LOOP() {
         COROUTINE_DELAY_SECONDS(20);
+        mood = LICKING;
+        front_eyes(LICKING_EYE);
         static uint8_t random_arm;
         static uint8_t other_arm;
         random_arm = random(2) ? LEFTARM : RIGHTARM;
@@ -763,6 +777,8 @@ COROUTINE(rand_licking_paw) {
         arms->setPosition(random_arm, 0);
         arms->setPosition(other_arm, 0);
         head->setPosition(0);
+        close_eyes();
+        mood = STUDY;
         COROUTINE_DELAY(500);
         sense_hands = true;
     }
@@ -977,7 +993,7 @@ void loop() {
             break;
 
         case TIMER_GOING:
-            if (mood != STUDY && mood != ANGRY) {
+            if (mood != STUDY && mood != ANGRY && mood != LICKING) {
                 go_study();
                 mood = STUDY;
                 rand_licking_paw.reset();
@@ -1071,7 +1087,7 @@ void loop() {
     }
     if (status == IDLE && mood != HAPPY) {
         zzz_eyes.runCoroutine();
-    } else if (mood != HAPPY && mood != SAD) {
+    } else if (mood != HAPPY && mood != SAD && mood != LICKING) {
         blink_eyes.runCoroutine();
     }
 
