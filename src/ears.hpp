@@ -3,7 +3,7 @@
 */
 
 #include <stdint.h>
-#include <Servo.h>
+#include "Servo.h"
 
 /** Representation of the ears. */
 class Ears {
