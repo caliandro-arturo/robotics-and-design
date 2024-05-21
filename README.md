@@ -11,11 +11,12 @@ Arduino Mega 2560, but it should work on any AVR architecture that can host enou
 
 ## Used libraries
 
-- [AceRoutine](https://github.com/bxparks/AceRoutine)
-- [DFRobotDFPlayerMini](https://github.com/DFRobot/DFRobotDFPlayerMini)
-- [MATRIX7219](https://github.com/RobTillaart/MATRIX7219)
-- [Servo](https://github.com/arduino-libraries/Servo)
-- [TM1637](https://github.com/avishorp/TM1637)
+- [AceRoutine 1.5.1](https://github.com/bxparks/AceRoutine)
+- [DFRobotDFPlayerMini 1.0.5](https://github.com/DFRobot/DFRobotDFPlayerMini)
+- [Low-Power 1.81](https://github.com/rocketscream/Low-Power)
+- [MATRIX7219 0.1.2](https://github.com/RobTillaart/MATRIX7219)
+- [Servo 1.2.1](https://github.com/arduino-libraries/Servo)
+- [TM1637 1.2.0](https://github.com/avishorp/TM1637)
 
 ## Project layout
 
