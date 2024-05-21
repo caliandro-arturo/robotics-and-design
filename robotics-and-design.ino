@@ -469,7 +469,7 @@ uint8_t SAD_EYE[] = {
 };
 
 
-uint8_t FRONT_EYE[] = {
+uint8_t NORMAL_EYE[] = {
     0b00111100,
     0b01110110,
     0b01100110,
@@ -793,10 +793,10 @@ void assign_mood() {
     blink_eyes.reset();
     switch (mood) {
         case NORMAL:
-            assign_eye(FRONT_EYE);
+            assign_eye(NORMAL_EYE);
             break;
         case STUDY:
-            assign_eye(FRONT_EYE);
+            assign_eye(NORMAL_EYE);
             break;
         case ANGRY:
             assign_eye(ANGRY_EYE);
@@ -897,7 +897,7 @@ void loop() {
                 phoneRemovedFinished = true;
                 status = TIMER_FINISHED;
             }
-            check_interaction();
+            //check_interaction();
             trigger_user();
             break;
 
@@ -968,7 +968,7 @@ void loop() {
                 phoneRemovedFinished = true;
                 status = TIMER_FINISHED;
             }
-            check_interaction();
+            //check_interaction();
             trigger_user();
             break;
 
