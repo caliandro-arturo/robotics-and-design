@@ -186,19 +186,19 @@ COROUTINE(blink_timer) {
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
     display.setBrightness(7, true);
-    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
     COROUTINE_DELAY(70);
     display.clear();
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
     display.setBrightness(7, true);
-    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
     COROUTINE_DELAY(70);
     display.clear();
     display.setBrightness(0, false);
     COROUTINE_DELAY(70);
     display.setBrightness(7, true);
-    display.showNumberDecEx(100 * hour + minute, 0b01000000, true);
+    display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
     COROUTINE_DELAY(70);
     COROUTINE_END();
 }
@@ -309,9 +309,11 @@ void increment_minutes() {
 
 void increment_status() {
     if (status == SET_MINUTES) {
+        setMinute = minute;
         previousStatus = SET_MINUTES;
         status = FEEDBACK_STATE;
     } else if (status == SET_HOURS) {
+        setHour = hour;
         previousStatus = SET_HOURS;
         status = FEEDBACK_STATE;
     }
@@ -937,14 +939,12 @@ void loop() {
                 reset_encoder();
                 Serial.println("Minutes set");
                 isMinuteSet = true;
-                setMinute = minute;
                 display.showNumberDecEx(setMinute, 0b01000000, true);
                 previousTriggerMillis = millis();
                 previousNoInteraction = millis();
                 status = SET_HOURS;
             } else if (previousStatus == SET_HOURS) {
                 Serial.println("Hours set");
-                setHour = hour;
                 display.showNumberDecEx(100 * setHour + setMinute, 0b01000000, true);
                 isHourSet = true;
                 previousNoInteraction = millis();
@@ -1069,6 +1069,8 @@ void loop() {
             Serial.println("Time finished!");
             hour = 0;
             minute = 0;
+            setHour = 0;
+            setMinute = 0;
             display.showNumberDecEx(0x00, 0b01000000, true);
             previousStatus = TIMER_FINISHED;
             status = FEEDBACK_STATE;
