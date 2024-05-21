@@ -167,7 +167,7 @@ void init_mp3() {
 
 TM1637Display display(TIMER_CLK, TIMER_DIO);
 
-int num_blinks;
+
 volatile int counter;
 int lastEnA = LOW;
 unsigned long lastTime = 0UL;
@@ -827,7 +827,6 @@ void assign_mood() {
 
 void setup() {
     init_power();
-    num_blinks = 10;
     status = IDLE;
     mood = SLEEP;
     prevMood = NORMAL;  // Just so it is different from mood
@@ -1068,7 +1067,6 @@ void loop() {
 
         case TIMER_FINISHED:
             Serial.println("Time finished!");
-            num_blinks = 0;
             hour = 0;
             minute = 0;
             display.showNumberDecEx(0x00, 0b01000000, true);
