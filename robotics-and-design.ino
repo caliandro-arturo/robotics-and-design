@@ -310,11 +310,9 @@ void increment_minutes() {
 void increment_status() {
     if (status == SET_MINUTES) {
         previousStatus = SET_MINUTES;
-        Serial.println("non va");
         status = FEEDBACK_STATE;
     } else if (status == SET_HOURS) {
         previousStatus = SET_HOURS;
-        Serial.println("non va2");
         status = FEEDBACK_STATE;
     }
 }
