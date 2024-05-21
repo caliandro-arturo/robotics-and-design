@@ -139,16 +139,12 @@ int current_meow = 2;
 
 enum SFX {
     PRR_SFX = 1,
-    HAPPY_SFX = 2, //happy
+    HAPPY_SFX = 2,
     SAD_SFX = 3,
-    DISAPPOINTED_SFX = 4,  // giusto 4 ma metto angry2 // ci va 3
-    ANGRY_SFX_1 = 5,       //ok
+    DISAPPOINTED_SFX = 4,
+    ANGRY_SFX_1 = 5,
     ANGRY_SFX_2 = 6,
-    LICK_SFX = 7  //6 angry 2
-
-    //1 happy 1
-    //4 disapp
-    // 5 angry 2
+    LICK_SFX = 7
 };
 
 void init_mp3() {
