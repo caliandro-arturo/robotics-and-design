@@ -4,12 +4,23 @@ Firmware for the robot that has been designed as a project for the
 Robotics and Design course at Politecnico di Milano during the A.Y.
 2023/2024.
 
-## Board
+## Requirements
 
-Arduino Mega 2560, but it should work on any AVR architecture that can host enough pins to be populated by the components described in
-`src/pins.hpp`.
+### Software
 
-## Used libraries
+There are three options here: \
+1. [arduino-cli](https://arduino.github.io/arduino-cli/latest/installation);
+2. [VS Code](https://code.visualstudio.com)*;
+3. [Arduino IDE](https://www.arduino.cc/en/software).
+
+<details>
+<summary>* for VS Codium users</summary>
+if you want to use VS Codium instead, get ready to suffer.
+</details>
+
+### Libraries
+
+The following libraries are already included into the repo, in the `libs` folder:
 
 - [AceRoutine 1.5.1](https://github.com/bxparks/AceRoutine)
 - [DFRobotDFPlayerMini 1.0.5](https://github.com/DFRobot/DFRobotDFPlayerMini)
@@ -17,6 +28,41 @@ Arduino Mega 2560, but it should work on any AVR architecture that can host enou
 - [MATRIX7219 0.1.2](https://github.com/RobTillaart/MATRIX7219)
 - [Servo 1.2.1](https://github.com/arduino-libraries/Servo)
 - [TM1637 1.2.0](https://github.com/avishorp/TM1637)
+
+### Board
+
+Arduino Mega 2560, but it should work on any AVR architecture that
+can host enough pins to be populated by the components described in
+`src/pins.hpp`.
+
+## How to install
+
+This depends on which option you selected [here](#software):
+
+### arduino-cli
+
+Plug your board and simply run `build.sh`.
+
+### VS Code
+
+- Install the [Arduino extension](https://github.com/microsoft/vscode-arduino);
+- Run `Arduino: Initialize` from the command palette;
+- Select `Arduino Mega or Mega 2560` (or your board);
+- Open `.vscode/arduino.json` and append `"output": "build"` to the object;
+- Open `.vscode/c_cpp_properties.json` and
+    - Change the configuration name from `Arduino` to something else, like
+    `Arduiyes`;
+    - Append to the `compilerArgs` array the argument `"-mmcu=atmega2560"`
+    (or the name of your mcu);
+    - Append to the `includePath` array the argument
+    `"${workspaceFolder}/libs/**"`
+then select `Arduiyes` as the configuration for the project (at the bottom right
+of the VS Code window).
+
+### Arduino IDE
+
+I did not figure out how to include source files from non-standard folders, so
+just install the [required libraries](#libraries).
 
 ## Project layout
 
