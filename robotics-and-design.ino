@@ -13,16 +13,13 @@
 
 using namespace ace_routine;
 
-unsigned long lastTimeEye = 0UL;
 int setMinute;
 int setHour;
-byte lastButtonState = HIGH;
 bool isMinuteSet;
 bool isHourSet;
 int minute;
 int hour;
 volatile int encoderPos = 0;
-int oldProximity;
 bool phonePresent;
 extern power power_status;
 bool phoneRemovedFinished = 0;
@@ -134,7 +131,6 @@ void check_phone() {
 *
 */
 DFRobotDFPlayerMini mp3;
-int current_meow = 2;
 
 enum SFX {
     PRR_SFX = 1,
@@ -165,14 +161,8 @@ void init_mp3() {
 
 TM1637Display display(TIMER_CLK, TIMER_DIO);
 
-
-volatile int counter;
-int lastEnA = LOW;
-unsigned long lastTime = 0UL;
-
 unsigned long previousMillis = 0;
 unsigned long previousTriggerMillis = 0;
-unsigned long interval = 1000;
 
 volatile int lastEncoded = 0;
 unsigned long currentMillis;
@@ -348,7 +338,6 @@ ISR(PCINT0_vect) {
 }
 
 void clock_setup() {
-    counter = 0;
     display.setBrightness(7, true);
     display.clear();
     minute = 0;
