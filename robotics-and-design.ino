@@ -42,7 +42,6 @@ enum Mood { NORMAL,
 volatile Mood mood, prevMood;
 
 enum Status { IDLE,
-              START,
               FEEDBACK_STATE,
               SET_MINUTES,
               SET_HOURS,
