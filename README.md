@@ -1,22 +1,22 @@
 # Robotics and Design
 
-Firmware for the robot that has been designed as a project for the
-Robotics and Design course at Politecnico di Milano during the A.Y.
-2023/2024.
+Firmware for Romeow, the robot that has been designed as a project
+for the Robotics and Design course at Politecnico di Milano during
+the A.Y. 2023/2024.
 
 ## Requirements
 
 ### Software
 
-There are three options here: \
+There are three options here:
 1. [arduino-cli](https://arduino.github.io/arduino-cli/latest/installation);
 2. [VS Code](https://code.visualstudio.com)*;
 3. [Arduino IDE](https://www.arduino.cc/en/software).
 
-<details>
-<summary>* for VS Codium users</summary>
-if you want to use VS Codium instead, get ready to suffer.
-</details>
+\* for VS Codium users: \
+The Arduino extension and its dependencies (namely C/C++ and Serial Monitor)
+are released by Microsoft, so you have to [download and install them manually](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix).
+
 
 ### Libraries
 
@@ -33,7 +33,7 @@ The following libraries are already included into the repo, in the `libs` folder
 
 Arduino Mega 2560, but it should work on any AVR architecture that
 can host enough pins to be populated by the components described in
-`src/pins.hpp`.
+`src/pins.hpp` and is supported by the libraries listed above.
 
 ## How to install
 
@@ -50,12 +50,10 @@ Plug your board and simply run `build.sh`.
 - Select `Arduino Mega or Mega 2560` (or your board);
 - Open `.vscode/arduino.json` and append `"output": "build"` to the object;
 - Open `.vscode/c_cpp_properties.json` and
-    - Change the configuration name from `Arduino` to something else, like
-    `Arduiyes`;
-    - Append to the `compilerArgs` array the argument `"-mmcu=atmega2560"`
-    (or the name of your mcu);
-    - Append to the `includePath` array the argument
-    `"${workspaceFolder}/libs/**"`
+    - Change the configuration name from `Arduino` to something else, like `Arduiyes`;
+    - Append to the `compilerArgs` array the argument `"-mmcu=atmega2560"` (or the name of your mcu);
+    - Append to the `includePath` array the argument `"${workspaceFolder}/libs/**"`
+
 then select `Arduiyes` as the configuration for the project (at the bottom right
 of the VS Code window).
 
