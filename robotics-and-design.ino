@@ -741,7 +741,7 @@ COROUTINE(rand_head) {
 */
 COROUTINE(rand_licking_paw) {
     COROUTINE_LOOP() {
-        COROUTINE_DELAY_SECONDS(20);
+        COROUTINE_DELAY_SECONDS(60);
         mood = LICKING;
         front_eyes(LICKING_EYE);
         static uint8_t random_arm;
