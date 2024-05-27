@@ -985,7 +985,8 @@ void loop() {
             countdown();
 
             check_hand();
-            if (lastHandPresence != 0 && mood == STUDY && millis() - angry_last_hand_detection_time >= angry_relax) {
+            if (lastHandPresence != 0 && (mood == STUDY || mood == LICKING)
+                && millis() - angry_last_hand_detection_time >= angry_relax) {
                 angry_start_rotation = millis();
                 angry_start_time = millis();
                 rand_licking_paw.reset();
